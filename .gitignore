@@ -16,3 +16,40 @@ frontend/.angular/
 
 # Env
 .env
+
+
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# production
+/dist
+/tmp
+/out-tsc
+
+# IDEs
+/.angular
+/.vscode
+/.idea
+*.iml
+*.iws
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Angular
+.angular/
