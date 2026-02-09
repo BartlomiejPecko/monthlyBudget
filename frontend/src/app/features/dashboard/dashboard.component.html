@@ -1,0 +1,153 @@
+<!-- Loading -->
+<div class="state-message" *ngIf="loading()">
+  <div class="spinner"></div>
+  <p>Loading dashboard…</p>
+</div>
+
+<div class="dashboard" *ngIf="!loading()">
+  <!-- Greeting -->
+  <div class="greeting">
+    <h1 class="greeting__title">Welcome back 👋</h1>
+    <p class="greeting__sub">Here's your financial overview</p>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="stats-grid">
+    <div class="stat-card stat-card--balance">
+      <div class="stat-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="3"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Total Balance</span>
+        <span class="stat-card__value">{{ formatCurrency(totalBalance()) }}</span>
+      </div>
+      <div class="stat-card__accent-line"></div>
+    </div>
+
+    <div class="stat-card stat-card--spent">
+      <div class="stat-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">This Month Spent</span>
+        <span class="stat-card__value">{{ formatCurrency(currentMonthExpenses()) }}</span>
+      </div>
+      <div class="stat-card__accent-line"></div>
+    </div>
+
+    <div class="stat-card stat-card--returns">
+      <div class="stat-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="1 4 1 10 7 10"/>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+        </svg>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">This Month Returns</span>
+        <span class="stat-card__value">{{ formatCurrency(currentMonthReturns()) }}</span>
+      </div>
+      <div class="stat-card__accent-line"></div>
+    </div>
+
+    <div class="stat-card stat-card--accounts">
+      <div class="stat-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <rect x="8" y="2" width="8" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="stat-card__content">
+        <span class="stat-card__label">Active Accounts</span>
+        <span class="stat-card__value">{{ totalAccounts() }}</span>
+      </div>
+      <div class="stat-card__accent-line"></div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Bar Chart -->
+    <div class="chart-card chart-card--bar">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">Monthly Overview</h3>
+        <span class="chart-card__sub">Last 6 months</span>
+      </div>
+      <div class="chart-card__body">
+        <div class="chart-wrap chart-wrap--bar" *ngIf="expenses().length > 0">
+          <canvas
+            baseChart
+            [data]="barData()"
+            [options]="barOptions"
+            type="bar"
+          ></canvas>
+        </div>
+        <div class="chart-empty" *ngIf="expenses().length === 0">
+          <p>Add expenses to see your monthly trends</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="chart-card chart-card--pie">
+      <div class="chart-card__header">
+        <h3 class="chart-card__title">By Category</h3>
+        <span class="chart-card__sub">All time spending</span>
+      </div>
+      <div class="chart-card__body">
+        <div class="chart-wrap chart-wrap--pie" *ngIf="expenses().length > 0">
+          <canvas
+            baseChart
+            [data]="pieData()"
+            [options]="pieOptions"
+            type="pie"
+          ></canvas>
+        </div>
+        <div class="chart-empty" *ngIf="expenses().length === 0">
+          <p>Add expenses to see category breakdown</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="recent-card">
+    <div class="recent-card__header">
+      <h3 class="recent-card__title">Recent Transactions</h3>
+      <a class="recent-card__link" routerLink="/expenses">View all →</a>
+    </div>
+
+    <div class="recent-card__empty" *ngIf="recentExpenses().length === 0">
+      <p>No transactions yet. <a routerLink="/expenses">Add your first expense</a></p>
+    </div>
+
+    <div class="recent-list" *ngIf="recentExpenses().length > 0">
+      <ng-container *ngFor="let exp of recentExpenses(); let i = index">
+        <div
+          class="recent-row"
+          [class.recent-row--return]="exp.isReturn"
+          [style.animation-delay]="i * 50 + 'ms'"
+        >
+          <div
+            class="recent-row__icon"
+            [style.background]="getCategoryColor(exp.categoryId) + '18'"
+          >
+            {{ exp.categoryName?.charAt(0) || '?' }}
+          </div>
+          <div class="recent-row__info">
+            <span class="recent-row__desc">{{ exp.description || exp.categoryName }}</span>
+            <span class="recent-row__date">{{ formatDate(exp.date) }} · {{ exp.accountName }}</span>
+          </div>
+          <div class="recent-row__amount" [class.recent-row__amount--return]="exp.isReturn">
+            {{ exp.isReturn ? '+' : '-' }}{{ formatCurrency(exp.amount) }}
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

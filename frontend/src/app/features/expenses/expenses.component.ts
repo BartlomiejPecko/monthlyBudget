@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import {
@@ -12,7 +12,7 @@ import {
 @Component({
   selector: 'app-expenses',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './expenses.component.html',
   styleUrl: './expenses.component.scss',
 })

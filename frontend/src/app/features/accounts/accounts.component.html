@@ -14,251 +14,270 @@
 </div>
 
 <!-- Summary Cards -->
-<div class="summary-strip" *ngIf="accounts().length > 0">
-  <div class="summary-card summary-card--balance">
-    <div class="summary-card__icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="4" width="20" height="16" rx="3"/>
-        <line x1="2" y1="10" x2="22" y2="10"/>
-      </svg>
+@if (accounts().length > 0) {
+  <div class="summary-strip">
+    <div class="summary-card summary-card--balance">
+      <div class="summary-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="4" width="20" height="16" rx="3"/>
+          <line x1="2" y1="10" x2="22" y2="10"/>
+        </svg>
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__label">Total Balance</span>
+        <span class="summary-card__value">{{ formatCurrency(totalBalance()) }}</span>
+      </div>
     </div>
-    <div class="summary-card__content">
-      <span class="summary-card__label">Total Balance</span>
-      <span class="summary-card__value">{{ formatCurrency(totalBalance()) }}</span>
+    <div class="summary-card summary-card--initial">
+      <div class="summary-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="16"/>
+          <line x1="8" y1="12" x2="16" y2="12"/>
+        </svg>
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__label">Initial Deposits</span>
+        <span class="summary-card__value">{{ formatCurrency(totalInitial()) }}</span>
+      </div>
     </div>
-  </div>
-
-  <div class="summary-card summary-card--initial">
-    <div class="summary-card__icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="16"/>
-        <line x1="8" y1="12" x2="16" y2="12"/>
-      </svg>
-    </div>
-    <div class="summary-card__content">
-      <span class="summary-card__label">Initial Deposits</span>
-      <span class="summary-card__value">{{ formatCurrency(totalInitial()) }}</span>
-    </div>
-  </div>
-
   <div class="summary-card" [ngClass]="{
     'summary-card--positive': balanceDiff() >= 0,
     'summary-card--negative': balanceDiff() < 0
   }">
-    <div class="summary-card__icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polyline *ngIf="balanceDiff() >= 0" points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-        <polyline *ngIf="balanceDiff() < 0" points="23 18 13.5 8.5 8.5 13.5 1 6"/>
-      </svg>
+      <div class="summary-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          @if (balanceDiff() >= 0) {
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          }
+          @if (balanceDiff() < 0) {
+            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+          }
+        </svg>
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__label">Net Change</span>
+        <span class="summary-card__value">
+          {{ balanceDiff() >= 0 ? '+' : '' }}{{ formatCurrency(balanceDiff()) }}
+        </span>
+      </div>
     </div>
-    <div class="summary-card__content">
-      <span class="summary-card__label">Net Change</span>
-      <span class="summary-card__value">
-        {{ balanceDiff() >= 0 ? '+' : '' }}{{ formatCurrency(balanceDiff()) }}
-      </span>
+    <div class="summary-card summary-card--count">
+      <div class="summary-card__icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+          <rect x="8" y="2" width="8" height="4" rx="1"/>
+        </svg>
+      </div>
+      <div class="summary-card__content">
+        <span class="summary-card__label">Active Accounts</span>
+        <span class="summary-card__value">{{ accounts().length }}</span>
+      </div>
     </div>
   </div>
-
-  <div class="summary-card summary-card--count">
-    <div class="summary-card__icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-        <rect x="8" y="2" width="8" height="4" rx="1"/>
-      </svg>
-    </div>
-    <div class="summary-card__content">
-      <span class="summary-card__label">Active Accounts</span>
-      <span class="summary-card__value">{{ accounts().length }}</span>
-    </div>
-  </div>
-</div>
+}
 
 <!-- Loading State -->
-<div class="state-message" *ngIf="loading()">
-  <div class="spinner"></div>
-  <p>Loading your accounts…</p>
-</div>
+@if (loading()) {
+  <div class="state-message">
+    <div class="spinner"></div>
+    <p>Loading your accounts…</p>
+  </div>
+}
 
 <!-- Error State -->
-<div class="state-message state-message--error" *ngIf="error() && !loading()">
-  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round">
-    <circle cx="12" cy="12" r="10"/>
-    <line x1="15" y1="9" x2="9" y2="15"/>
-    <line x1="9" y1="9" x2="15" y2="15"/>
-  </svg>
-  <p>{{ error() }}</p>
-  <button class="btn btn--secondary" (click)="loadAccounts()">Retry</button>
-</div>
+@if (error() && !loading()) {
+  <div class="state-message state-message--error">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="15" y1="9" x2="9" y2="15"/>
+      <line x1="9" y1="9" x2="15" y2="15"/>
+    </svg>
+    <p>{{ error() }}</p>
+    <button class="btn btn--secondary" (click)="loadAccounts()">Retry</button>
+  </div>
+}
 
 <!-- Empty State -->
-<div class="state-message state-message--empty" *ngIf="!loading() && !error() && accounts().length === 0">
-  <div class="empty-icon">
-    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <rect x="2" y="4" width="20" height="16" rx="3"/>
-      <line x1="2" y1="10" x2="22" y2="10"/>
-      <circle cx="12" cy="15" r="1"/>
-    </svg>
+@if (!loading() && !error() && accounts().length === 0) {
+  <div class="state-message state-message--empty">
+    <div class="empty-icon">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="3"/>
+        <line x1="2" y1="10" x2="22" y2="10"/>
+        <circle cx="12" cy="15" r="1"/>
+      </svg>
+    </div>
+    <h3>No accounts yet</h3>
+    <p>Add your first bank account to start tracking expenses</p>
+    <button class="btn btn--primary" (click)="openAddModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Your First Account
+    </button>
   </div>
-  <h3>No accounts yet</h3>
-  <p>Add your first bank account to start tracking expenses</p>
-  <button class="btn btn--primary" (click)="openAddModal()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    Add Your First Account
-  </button>
-</div>
+}
 
 <!-- Accounts Grid -->
-<div class="accounts-grid" *ngIf="!loading() && !error() && accounts().length > 0">
-  <ng-container *ngFor="let account of accounts(); let i = index">
-    <div class="account-card" [style.animation-delay]="i * 60 + 'ms'">
-      <div class="account-card__header">
-        <div class="account-card__icon-wrap">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="4" width="20" height="16" rx="3"/>
-            <line x1="2" y1="10" x2="22" y2="10"/>
-          </svg>
-        </div>
-        <div class="account-card__name">{{ account.name }}</div>
-        <div class="account-card__actions">
-          <button class="icon-btn" title="Edit" (click)="openEditModal(account)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+@if (!loading() && !error() && accounts().length > 0) {
+  <div class="accounts-grid">
+    @for (account of accounts(); track account; let i = $index) {
+      <div class="account-card" [style.animation-delay]="i * 60 + 'ms'">
+        <div class="account-card__header">
+          <div class="account-card__icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="3"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
             </svg>
-          </button>
-          <button class="icon-btn icon-btn--danger" title="Delete" (click)="openDeleteConfirm(account)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="3 6 5 6 21 6"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-          </button>
+          </div>
+          <div class="account-card__name">{{ account.name }}</div>
+          <div class="account-card__actions">
+            <button class="icon-btn" title="Edit" (click)="openEditModal(account)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="icon-btn icon-btn--danger" title="Delete" (click)="openDeleteConfirm(account)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div class="account-card__balance-section">
-        <div class="account-card__current">
-          <span class="account-card__current-label">Current Balance</span>
+        <div class="account-card__balance-section">
+          <div class="account-card__current">
+            <span class="account-card__current-label">Current Balance</span>
           <span class="account-card__current-value" [ngClass]="{
             'positive': account.currentBalance > 0,
             'negative': account.currentBalance < 0
           }">{{ formatCurrency(account.currentBalance) }}</span>
+          </div>
         </div>
-      </div>
-
-      <div class="account-card__footer">
-        <div class="account-card__initial">
-          <span class="account-card__initial-label">Initial</span>
-          <span class="account-card__initial-value">{{ formatCurrency(account.initialBalance) }}</span>
-        </div>
+        <div class="account-card__footer">
+          <div class="account-card__initial">
+            <span class="account-card__initial-label">Initial</span>
+            <span class="account-card__initial-value">{{ formatCurrency(account.initialBalance) }}</span>
+          </div>
         <div class="account-card__change" [ngClass]="{
           'positive': account.currentBalance - account.initialBalance >= 0,
           'negative': account.currentBalance - account.initialBalance < 0
         }">
-          <svg *ngIf="account.currentBalance - account.initialBalance >= 0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <polyline points="18 15 12 9 6 15"/>
-          </svg>
-          <svg *ngIf="account.currentBalance - account.initialBalance < 0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <polyline points="6 9 12 15 18 9"/>
-          </svg>
-          <span>{{ formatCurrency(account.currentBalance - account.initialBalance) }}</span>
+            @if (account.currentBalance - account.initialBalance >= 0) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+            }
+            @if (account.currentBalance - account.initialBalance < 0) {
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            }
+            <span>{{ formatCurrency(account.currentBalance - account.initialBalance) }}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </ng-container>
-</div>
+    }
+  </div>
+}
 
 <!-- Add/Edit Modal -->
-<div class="modal-backdrop" *ngIf="showModal()" (click)="onBackdropClick($event)">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal__header">
-      <h2>{{ editingAccount() ? 'Edit Account' : 'New Account' }}</h2>
-      <button class="icon-btn" (click)="closeModal()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"/>
-          <line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-      </button>
-    </div>
-
-    <div class="modal__body">
-      <div class="form-group">
-        <label class="form-label" for="accountName">Account Name</label>
-        <input
-          class="form-input"
-          id="accountName"
-          type="text"
-          placeholder="e.g. Main Checking, Savings…"
-          [(ngModel)]="formName"
-          (keyup.enter)="saveAccount()"
-          autofocus
-        />
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal__header">
+        <h2>{{ editingAccount() ? 'Edit Account' : 'New Account' }}</h2>
+        <button class="icon-btn" (click)="closeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
       </div>
-
-      <div class="form-group" *ngIf="!editingAccount()">
-        <label class="form-label" for="initialBalance">Initial Balance (PLN)</label>
-        <input
-          class="form-input form-input--money"
-          id="initialBalance"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="0.00"
-          [(ngModel)]="formInitialBalance"
-          (keyup.enter)="saveAccount()"
-        />
+      <div class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="accountName">Account Name</label>
+          <input
+            class="form-input"
+            id="accountName"
+            type="text"
+            placeholder="e.g. Main Checking, Savings…"
+            [(ngModel)]="formName"
+            (keyup.enter)="saveAccount()"
+            autofocus
+            />
+        </div>
+        @if (!editingAccount()) {
+          <div class="form-group">
+            <label class="form-label" for="initialBalance">Initial Balance (PLN)</label>
+            <input
+              class="form-input form-input--money"
+              id="initialBalance"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="0.00"
+              [(ngModel)]="formInitialBalance"
+              (keyup.enter)="saveAccount()"
+              />
+          </div>
+        }
+        @if (formError) {
+          <div class="form-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ formError }}
+          </div>
+        }
       </div>
-
-      <div class="form-error" *ngIf="formError">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        {{ formError }}
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeModal()" [disabled]="saving()">Cancel</button>
+        <button class="btn btn--primary" (click)="saveAccount()" [disabled]="saving()">
+          @if (saving()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ saving() ? 'Saving…' : (editingAccount() ? 'Update' : 'Create Account') }}
+        </button>
       </div>
-    </div>
-
-    <div class="modal__footer">
-      <button class="btn btn--secondary" (click)="closeModal()" [disabled]="saving()">Cancel</button>
-      <button class="btn btn--primary" (click)="saveAccount()" [disabled]="saving()">
-        <div class="spinner spinner--sm" *ngIf="saving()"></div>
-        {{ saving() ? 'Saving…' : (editingAccount() ? 'Update' : 'Create Account') }}
-      </button>
     </div>
   </div>
-</div>
+}
 
 <!-- Delete Confirmation Modal -->
-<div class="modal-backdrop" *ngIf="showDeleteConfirm()" (click)="onDeleteBackdropClick($event)">
-  <div class="modal modal--sm" role="dialog" aria-modal="true">
-    <div class="modal__header modal__header--danger">
-      <div class="modal__danger-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-          <line x1="12" y1="9" x2="12" y2="13"/>
-          <line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
+@if (showDeleteConfirm()) {
+  <div class="modal-backdrop" (click)="onDeleteBackdropClick($event)">
+    <div class="modal modal--sm" role="dialog" aria-modal="true">
+      <div class="modal__header modal__header--danger">
+        <div class="modal__danger-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h2>Delete Account</h2>
       </div>
-      <h2>Delete Account</h2>
-    </div>
-
-    <div class="modal__body">
-      <p class="delete-message">
-        Are you sure you want to delete <strong>{{ deletingAccount()?.name }}</strong>?
-        This will also remove all expenses linked to this account. This action cannot be undone.
-      </p>
-    </div>
-
-    <div class="modal__footer">
-      <button class="btn btn--secondary" (click)="closeDeleteConfirm()" [disabled]="deleting()">Cancel</button>
-      <button class="btn btn--danger" (click)="confirmDelete()" [disabled]="deleting()">
-        <div class="spinner spinner--sm" *ngIf="deleting()"></div>
-        {{ deleting() ? 'Deleting…' : 'Delete Account' }}
-      </button>
+      <div class="modal__body">
+        <p class="delete-message">
+          Are you sure you want to delete <strong>{{ deletingAccount()?.name }}</strong>?
+          This will also remove all expenses linked to this account. This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeDeleteConfirm()" [disabled]="deleting()">Cancel</button>
+        <button class="btn btn--danger" (click)="confirmDelete()" [disabled]="deleting()">
+          @if (deleting()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ deleting() ? 'Deleting…' : 'Delete Account' }}
+        </button>
+      </div>
     </div>
   </div>
-</div>
+}

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -7,44 +7,44 @@ import { ThemeService } from '../../core/services/theme.service';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   template: `
     <div class="shell">
       <nav class="sidebar">
         <div class="logo">monthlyBudget<span>.app</span></div>
-
+    
         <div class="nav-links">
-          <ng-container *ngFor="let item of navItems">
+          @for (item of navItems; track item) {
             <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
               <span class="nav-icon">{{ item.icon }}</span>
               {{ item.label }}
             </a>
-          </ng-container>
+          }
         </div>
-
+    
         <div class="sidebar-bottom">
           <button class="nav-item" (click)="toggleTheme()">
             <span class="nav-icon">{{ theme.isDark() ? '☀' : '☾' }}</span>
             {{ theme.isDark() ? 'Tryb jasny' : 'Tryb ciemny' }}
           </button>
-
+    
           <div class="user-card">
             <div class="user-label">Zalogowany jako</div>
             <div class="user-email">{{ auth.email() }}</div>
           </div>
-
+    
           <button class="nav-item logout" (click)="auth.logout()">
             <span class="nav-icon">⏻</span>
-            Wyloguj
+            Log out
           </button>
         </div>
       </nav>
-
+    
       <main class="content">
         <router-outlet />
       </main>
     </div>
-  `,
+    `,
   styles: [`
     .shell {
       display: flex;

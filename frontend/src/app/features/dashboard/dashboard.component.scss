@@ -1,0 +1,395 @@
+// ─── Dashboard ─────────────────────────────────────────
+
+.dashboard {
+  animation: fadeIn 0.35s ease-out;
+}
+
+// ─── Greeting ──────────────────────────────────────────
+
+.greeting {
+  margin-bottom: 2rem;
+  animation: fadeSlideDown 0.4s ease-out;
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.25rem;
+  }
+
+  &__sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+}
+
+// ─── Stat Cards ────────────────────────────────────────
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: fadeSlideUp 0.45s ease-out both;
+
+  &:nth-child(1) { animation-delay: 0ms; }
+  &:nth-child(2) { animation-delay: 60ms; }
+  &:nth-child(3) { animation-delay: 120ms; }
+  &:nth-child(4) { animation-delay: 180ms; }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px var(--shadow);
+  }
+
+  &__icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+  }
+
+  &__value {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // Accent line at bottom
+  &__accent-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    border-radius: 0 0 16px 16px;
+  }
+
+  // Variants
+  &--balance {
+    .stat-card__icon { background: rgba(224, 122, 95, 0.12); color: var(--accent); }
+    .stat-card__accent-line { background: var(--accent); }
+  }
+  &--spent {
+    .stat-card__icon { background: rgba(61, 64, 91, 0.1); color: var(--navy, #3D405B); }
+    .stat-card__accent-line { background: var(--navy, #3D405B); }
+  }
+  &--returns {
+    .stat-card__icon { background: rgba(129, 178, 154, 0.12); color: var(--green, #81B29A); }
+    .stat-card__value { color: var(--green, #81B29A); }
+    .stat-card__accent-line { background: var(--green, #81B29A); }
+  }
+  &--accounts {
+    .stat-card__icon { background: rgba(188, 108, 138, 0.12); color: var(--plum, #BC6C8A); }
+    .stat-card__accent-line { background: var(--plum, #BC6C8A); }
+  }
+}
+
+// ─── Charts Row ────────────────────────────────────────
+
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: fadeSlideUp 0.5s ease-out both;
+  animation-delay: 200ms;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem 0;
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+
+  &__sub {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  &__body {
+    padding: 1rem 1.5rem 1.5rem;
+  }
+}
+
+.chart-wrap {
+  position: relative;
+
+  &--bar {
+    height: 260px;
+  }
+
+  &--pie {
+    height: 280px;
+  }
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+}
+
+// ─── Recent Transactions ───────────────────────────────
+
+.recent-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  animation: fadeSlideUp 0.55s ease-out both;
+  animation-delay: 280ms;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+
+  &__link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  &__empty {
+    padding: 2.5rem;
+    text-align: center;
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+  }
+}
+
+.recent-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1.5rem;
+  transition: background 0.15s ease;
+  animation: fadeSlideUp 0.35s ease-out both;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  &:hover {
+    background: var(--hover);
+  }
+
+  &--return {
+    border-left: 3px solid var(--green, #81B29A);
+  }
+
+  &__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  &__desc {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__date {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  &__amount {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    &--return {
+      color: var(--green, #81B29A);
+    }
+  }
+}
+
+// ─── States ────────────────────────────────────────────
+
+.state-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 5rem 2rem;
+  text-align: center;
+  animation: fadeIn 0.4s ease-out;
+
+  p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// ─── Animations ────────────────────────────────────────
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// ─── Responsive ────────────────────────────────────────
+
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .greeting__title {
+    font-size: 1.4rem;
+  }
+
+  .recent-row {
+    padding: 0.75rem 1rem;
+  }
+}

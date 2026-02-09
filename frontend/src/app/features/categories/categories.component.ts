@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../core/services/api.service';
 import { Category, CategoryRequest } from '../../core/models';
@@ -7,7 +7,7 @@ import { Category, CategoryRequest } from '../../core/models';
 @Component({
   selector: 'app-categories',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './categories.component.html',
   styleUrl: './categories.component.scss',
 })
