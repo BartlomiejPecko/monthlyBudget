@@ -1,0 +1,222 @@
+<!-- Page Header -->
+<div class="page-header">
+  <div class="page-header__text">
+    <h1 class="page-title">Categories</h1>
+    <p class="page-subtitle">Organize your expenses with custom categories</p>
+  </div>
+  <button class="btn btn--primary btn--add" (click)="openAddModal()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Add Category
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="state-message" *ngIf="loading()">
+  <div class="spinner"></div>
+  <p>Loading categories…</p>
+</div>
+
+<!-- Error -->
+<div class="state-message state-message--error" *ngIf="error() && !loading()">
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round">
+    <circle cx="12" cy="12" r="10"/>
+    <line x1="15" y1="9" x2="9" y2="15"/>
+    <line x1="9" y1="9" x2="15" y2="15"/>
+  </svg>
+  <p>{{ error() }}</p>
+  <button class="btn btn--secondary" (click)="loadCategories()">Retry</button>
+</div>
+
+<!-- Empty -->
+<div class="state-message state-message--empty" *ngIf="!loading() && !error() && categories().length === 0">
+  <div class="empty-icon">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+      <line x1="2" y1="10" x2="22" y2="10"/>
+    </svg>
+  </div>
+  <h3>No categories yet</h3>
+  <p>Create your first category to start organizing expenses</p>
+  <button class="btn btn--primary" (click)="openAddModal()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+    Create First Category
+  </button>
+</div>
+
+<!-- Categories Grid -->
+<div class="categories-grid" *ngIf="!loading() && !error() && categories().length > 0">
+  <ng-container *ngFor="let cat of categories(); let i = index">
+    <div class="cat-card" [style.animation-delay]="i * 50 + 'ms'">
+      <div class="cat-card__left">
+        <div class="cat-card__icon" [style.background]="cat.color + '20'" [style.color]="cat.color">
+          {{ cat.icon || '📁' }}
+        </div>
+        <div class="cat-card__info">
+          <span class="cat-card__name">
+            {{ cat.name }}
+            <span class="cat-card__badge" *ngIf="cat.isDefault">Default</span>
+          </span>
+          <div class="cat-card__meta">
+            <span class="cat-card__color-dot" [style.background]="cat.color"></span>
+            <span class="cat-card__color-label">{{ cat.color }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="cat-card__actions">
+        <button class="icon-btn" title="Edit" (click)="openEditModal(cat)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="icon-btn icon-btn--danger" title="Delete" (click)="openDeleteConfirm(cat)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-backdrop" *ngIf="showModal()" (click)="onBackdropClick($event)">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal__header">
+      <h2>{{ editingCategory() ? 'Edit Category' : 'New Category' }}</h2>
+      <button class="icon-btn" (click)="closeModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal__body">
+      <!-- Name -->
+      <div class="form-group">
+        <label class="form-label" for="catName">Category Name</label>
+        <input
+          class="form-input"
+          id="catName"
+          type="text"
+          placeholder="e.g. Groceries, Transport…"
+          [(ngModel)]="formName"
+          (keyup.enter)="saveCategory()"
+          autofocus
+        />
+      </div>
+
+      <!-- Icon Picker -->
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-grid">
+          <ng-container *ngFor="let icon of iconPresets">
+            <button
+              class="icon-pick"
+              [class.icon-pick--active]="formIcon === icon"
+              (click)="selectIcon(icon)"
+            >
+              {{ icon }}
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Color Picker -->
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-grid">
+          <ng-container *ngFor="let c of colorPresets">
+            <button
+              class="color-pick"
+              [style.background]="c.value"
+              [class.color-pick--active]="formColor === c.value"
+              [title]="c.name"
+              (click)="selectColor(c.value)"
+            >
+              <svg *ngIf="formColor === c.value" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </button>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div class="form-group">
+        <label class="form-label">Preview</label>
+        <div class="cat-preview">
+          <div class="cat-preview__icon" [style.background]="formColor + '20'">
+            {{ formIcon || '📁' }}
+          </div>
+          <span class="cat-preview__name">{{ formName || 'Category Name' }}</span>
+          <span class="cat-preview__badge" [style.background]="formColor + '20'" [style.color]="formColor">
+            {{ formName || 'Label' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Default toggle -->
+      <div class="form-group">
+        <label class="toggle-row">
+          <input type="checkbox" [(ngModel)]="formIsDefault" />
+          <span class="toggle-label">Mark as default category</span>
+        </label>
+      </div>
+
+      <div class="form-error" *ngIf="formError">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        {{ formError }}
+      </div>
+    </div>
+
+    <div class="modal__footer">
+      <button class="btn btn--secondary" (click)="closeModal()" [disabled]="saving()">Cancel</button>
+      <button class="btn btn--primary" (click)="saveCategory()" [disabled]="saving()">
+        <div class="spinner spinner--sm" *ngIf="saving()"></div>
+        {{ saving() ? 'Saving…' : (editingCategory() ? 'Update' : 'Create Category') }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation -->
+<div class="modal-backdrop" *ngIf="showDeleteConfirm()" (click)="onDeleteBackdropClick($event)">
+  <div class="modal modal--sm" role="dialog" aria-modal="true">
+    <div class="modal__header modal__header--danger">
+      <div class="modal__danger-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <h2>Delete Category</h2>
+    </div>
+    <div class="modal__body">
+      <p class="delete-message">
+        Are you sure you want to delete <strong>{{ deletingCategory()?.name }}</strong>?
+        Expenses using this category may be affected. This action cannot be undone.
+      </p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary" (click)="closeDeleteConfirm()" [disabled]="deleting()">Cancel</button>
+      <button class="btn btn--danger" (click)="confirmDelete()" [disabled]="deleting()">
+        <div class="spinner spinner--sm" *ngIf="deleting()"></div>
+        {{ deleting() ? 'Deleting…' : 'Delete Category' }}
+      </button>
+    </div>
+  </div>
+</div>

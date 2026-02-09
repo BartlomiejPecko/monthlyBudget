@@ -31,6 +31,10 @@
 }
 
 .light-theme {
+  --accent: #E07A5F;
+  --accent-soft: #FEF1ED;  // ADD THIS - solid light peachy background
+  --accent-shadow: rgba(224, 122, 95, 0.2);  // ADD THIS - lighter shadow
+  
   --bg: #FAF7F2;
   --bg-card: #FFFFFF;
   --bg-card-alt: #F5F0E8;

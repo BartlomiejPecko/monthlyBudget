@@ -1,72 +1,98 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import {
-  Account, AccountRequest,
-  Category, CategoryRequest,
-  Expense, ExpenseRequest,
-  Goal, GoalRequest,
-} from '../models';
+import { Account, AccountRequest } from '../models/account.model';
+import { Category, CategoryRequest } from '../models/category.model';
+import { Expense, ExpenseRequest } from '../models/expense.model';
+import { Goal, GoalRequest } from '../models/goal.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private readonly BASE = 'http://localhost:8080/api';
+  private base = 'http://localhost:8080/api';
 
   constructor(private http: HttpClient) {}
 
-  // --- Accounts ---
+  // ─── Accounts ──────────────────────────
   getAccounts(): Observable<Account[]> {
-    return this.http.get<Account[]>(`${this.BASE}/accounts`);
+    return this.http.get<Account[]>(`${this.base}/accounts`);
   }
+
+  getAccount(id: number): Observable<Account> {
+    return this.http.get<Account>(`${this.base}/accounts/${id}`);
+  }
+
   createAccount(req: AccountRequest): Observable<Account> {
-    return this.http.post<Account>(`${this.BASE}/accounts`, req);
+    return this.http.post<Account>(`${this.base}/accounts`, req);
   }
+
   updateAccount(id: number, req: AccountRequest): Observable<Account> {
-    return this.http.put<Account>(`${this.BASE}/accounts/${id}`, req);
+    return this.http.put<Account>(`${this.base}/accounts/${id}`, req);
   }
+
   deleteAccount(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.BASE}/accounts/${id}`);
+    return this.http.delete<void>(`${this.base}/accounts/${id}`);
   }
 
-  // --- Categories ---
+  // ─── Categories ────────────────────────
   getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.BASE}/categories`);
+    return this.http.get<Category[]>(`${this.base}/categories`);
   }
+
+  getCategory(id: number): Observable<Category> {
+    return this.http.get<Category>(`${this.base}/categories/${id}`);
+  }
+
   createCategory(req: CategoryRequest): Observable<Category> {
-    return this.http.post<Category>(`${this.BASE}/categories`, req);
+    return this.http.post<Category>(`${this.base}/categories`, req);
   }
+
   updateCategory(id: number, req: CategoryRequest): Observable<Category> {
-    return this.http.put<Category>(`${this.BASE}/categories/${id}`, req);
+    return this.http.put<Category>(`${this.base}/categories/${id}`, req);
   }
+
   deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.BASE}/categories/${id}`);
+    return this.http.delete<void>(`${this.base}/categories/${id}`);
   }
 
-  // --- Expenses ---
+  // ─── Expenses ──────────────────────────
   getExpenses(): Observable<Expense[]> {
-    return this.http.get<Expense[]>(`${this.BASE}/expenses`);
-  }
-  createExpense(req: ExpenseRequest): Observable<Expense> {
-    return this.http.post<Expense>(`${this.BASE}/expenses`, req);
-  }
-  updateExpense(id: number, req: ExpenseRequest): Observable<Expense> {
-    return this.http.put<Expense>(`${this.BASE}/expenses/${id}`, req);
-  }
-  deleteExpense(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.BASE}/expenses/${id}`);
+    return this.http.get<Expense[]>(`${this.base}/expenses`);
   }
 
-  // --- Goals ---
+  getExpense(id: number): Observable<Expense> {
+    return this.http.get<Expense>(`${this.base}/expenses/${id}`);
+  }
+
+  createExpense(req: ExpenseRequest): Observable<Expense> {
+    return this.http.post<Expense>(`${this.base}/expenses`, req);
+  }
+
+  updateExpense(id: number, req: ExpenseRequest): Observable<Expense> {
+    return this.http.put<Expense>(`${this.base}/expenses/${id}`, req);
+  }
+
+  deleteExpense(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/expenses/${id}`);
+  }
+
+  // ─── Goals ─────────────────────────────
   getGoals(): Observable<Goal[]> {
-    return this.http.get<Goal[]>(`${this.BASE}/goals`);
+    return this.http.get<Goal[]>(`${this.base}/goals`);
   }
+
+  getGoal(id: number): Observable<Goal> {
+    return this.http.get<Goal>(`${this.base}/goals/${id}`);
+  }
+
   createGoal(req: GoalRequest): Observable<Goal> {
-    return this.http.post<Goal>(`${this.BASE}/goals`, req);
+    return this.http.post<Goal>(`${this.base}/goals`, req);
   }
+
   updateGoal(id: number, req: GoalRequest): Observable<Goal> {
-    return this.http.put<Goal>(`${this.BASE}/goals/${id}`, req);
+    return this.http.put<Goal>(`${this.base}/goals/${id}`, req);
   }
+
   deleteGoal(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.BASE}/goals/${id}`);
+    return this.http.delete<void>(`${this.base}/goals/${id}`);
   }
 }

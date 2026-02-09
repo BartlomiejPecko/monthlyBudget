@@ -11,7 +11,7 @@ import { ThemeService } from '../../core/services/theme.service';
   template: `
     <div class="shell">
       <nav class="sidebar">
-        <div class="logo">budżet<span>.app</span></div>
+        <div class="logo">monthlyBudget<span>.app</span></div>
 
         <div class="nav-links">
           <ng-container *ngFor="let item of navItems">
