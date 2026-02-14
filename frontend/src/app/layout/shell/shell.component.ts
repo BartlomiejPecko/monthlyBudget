@@ -167,10 +167,10 @@ import { ThemeService } from '../../core/services/theme.service';
 export class ShellComponent {
   navItems = [
     { path: '/dashboard', icon: '◉', label: 'Dashboard' },
-    { path: '/expenses', icon: '↗', label: 'Wydatki' },
-    { path: '/accounts', icon: '◎', label: 'Konta' },
-    { path: '/categories', icon: '▦', label: 'Kategorie' },
-    { path: '/goals', icon: '◈', label: 'Cele' },
+    { path: '/expenses', icon: '↗', label: 'Expenses' },
+    { path: '/accounts', icon: '◎', label: 'Accounts' },
+    { path: '/categories', icon: '▦', label: 'Categories' },
+    { path: '/goals', icon: '◈', label: 'Goals' },
   ];
 
   constructor(
