@@ -4,24 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';   
+import { TranslationService } from '../../../core/services/translation.service';
+
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="auth-page">
       <div class="auth-left">
         <div class="brand-pattern"></div>
         <div class="brand-content">
           <h1 class="brand-title">monthlyBudget<span>.app</span></h1>
-          <p class="brand-sub">Kontroluj swoje finanse.<br>Osiągaj cele.</p>
+          <p class="brand-sub">{{ 'auth.brand_sub_login' | t }}</p>
         </div>
       </div>
 
       <div class="auth-right">
         <div class="auth-form-wrapper">
-          <h2>Witaj ponownie</h2>
-          <p class="subtitle">Zaloguj się do swojego konta</p>
+          <h2>{{ 'auth.login.title' | t }}</h2>
+          <p class="subtitle">{{ 'auth.login.subtitle' | t }}</p>
 
           @if (error()) {
             <div class="error-msg">{{ error() }}</div>
@@ -29,7 +32,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
           <form (ngSubmit)="onSubmit()" class="auth-form">
             <div class="field">
-              <label for="email">Email</label>
+              <label for="email">{{ 'auth.login.email' | t }}</label>
               <input
                 id="email"
                 type="email"
@@ -41,7 +44,7 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <div class="field">
-              <label for="password">Hasło</label>
+              <label for="email">{{ 'auth.login.email' | t }}</label>
               <input
                 id="password"
                 type="password"
@@ -53,12 +56,12 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <button type="submit" class="btn-primary" [disabled]="loading()">
-              {{ loading() ? 'Logowanie...' : 'Zaloguj się' }}
+              {{ (loading() ? 'auth.login.loading' : 'auth.login.submit') | t  }}
             </button>
           </form>
 
-          <p class="switch-link">
-            Nie masz konta? <a routerLink="/register">Zarejestruj się</a>
+          <p class="switch-link">{{ 'auth.login.no_account' | t }} 
+          <a routerLink="/register">{{ 'auth.login.register_link' | t }}</a>
           </p>
         </div>
       </div>

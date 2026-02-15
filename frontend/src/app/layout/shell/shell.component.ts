@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-
+import { TranslationService } from '../../core/services/translation.service';
+import { TranslatePipe } from '../../core/pipes/translate.pipe';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
@@ -7,7 +8,7 @@ import { ThemeService } from '../../core/services/theme.service';
 @Component({
   selector: 'app-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, TranslatePipe],
   template: `
     <div class="shell">
       <nav class="sidebar">
@@ -17,7 +18,7 @@ import { ThemeService } from '../../core/services/theme.service';
           @for (item of navItems; track item) {
             <a [routerLink]="item.path" routerLinkActive="active" class="nav-item">
               <span class="nav-icon">{{ item.icon }}</span>
-              {{ item.label }}
+              {{ item.labelKey | t }}
             </a>
           }
         </div>
@@ -25,17 +26,22 @@ import { ThemeService } from '../../core/services/theme.service';
         <div class="sidebar-bottom">
           <button class="nav-item" (click)="toggleTheme()">
             <span class="nav-icon">{{ theme.isDark() ? '☀' : '☾' }}</span>
-            {{ theme.isDark() ? 'Tryb jasny' : 'Tryb ciemny' }}
+            {{ (theme.isDark() ? 'nav.theme_light' : 'nav.theme_dark') | t }}
+          </button>
+
+          <button class="nav-item" (click)="i18n.toggle()">
+            <span class="nav-icon">🌐</span>
+            {{ 'lang.switch' | t }}
           </button>
     
           <div class="user-card">
-            <div class="user-label">Zalogowany jako</div>
+            <div class="user-label">{{ 'nav.logged_as' | t }}</div>
             <div class="user-email">{{ auth.email() }}</div>
           </div>
     
           <button class="nav-item logout" (click)="auth.logout()">
             <span class="nav-icon">⏻</span>
-            Log out
+            {{ 'nav.logout' | t }}
           </button>
         </div>
       </nav>
@@ -166,16 +172,17 @@ import { ThemeService } from '../../core/services/theme.service';
 })
 export class ShellComponent {
   navItems = [
-    { path: '/dashboard', icon: '◉', label: 'Dashboard' },
-    { path: '/expenses', icon: '↗', label: 'Expenses' },
-    { path: '/accounts', icon: '◎', label: 'Accounts' },
-    { path: '/categories', icon: '▦', label: 'Categories' },
-    { path: '/goals', icon: '◈', label: 'Goals' },
+    { path: '/dashboard', icon: '◉', labelKey: 'nav.dashboard' },
+    { path: '/expenses', icon: '↗', labelKey: 'nav.expenses' },
+    { path: '/accounts', icon: '◎', labelKey: 'nav.accounts' },
+    { path: '/categories', icon: '▦', labelKey: 'nav.categories' },
+    { path: '/goals', icon: '◈', labelKey: 'nav.goals' },
   ];
 
   constructor(
     public auth: AuthService,
     public theme: ThemeService,
+    public i18n: TranslationService,
   ) {}
 
   toggleTheme() {

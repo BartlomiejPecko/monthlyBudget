@@ -4,24 +4,27 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';   
+import { TranslationService } from '../../../core/services/translation.service';
+
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, TranslatePipe],
   template: `
     <div class="auth-page">
       <div class="auth-left">
         <div class="brand-pattern"></div>
         <div class="brand-content">
           <h1 class="brand-title">monthlyBudget<span>.app</span></h1>
-          <p class="brand-sub">Zacznij śledzić wydatki.<br>To zajmie minutę.</p>
+          <p class="brand-sub">{{ 'auth.brand_sub_register' | t }}</p>
         </div>
       </div>
 
       <div class="auth-right">
         <div class="auth-form-wrapper">
-          <h2>Utwórz konto</h2>
-          <p class="subtitle">Dołącz i zacznij oszczędzać</p>
+          <h2>{{ 'auth.register.title' | t }}</h2>
+          <p class="subtitle">{{ 'auth.register.subtitle' | t }}</p>
 
           @if (error()) {
             <div class="error-msg">{{ error() }}</div>
@@ -29,7 +32,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
           <form (ngSubmit)="onSubmit()" class="auth-form">
             <div class="field">
-              <label for="email">Email</label>
+              <label for="email">{{ 'auth.register.email' | t }}</label>
               <input
                 id="email"
                 type="email"
@@ -41,7 +44,7 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <div class="field">
-              <label for="password">Hasło</label>
+              <label for="password">{{ 'auth.register.password' | t }}</label>
               <input
                 id="password"
                 type="password"
@@ -53,8 +56,7 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <div class="field">
-              <label for="confirmPassword">Potwierdź hasło</label>
-              <input
+              <label for="confirmPassword">{{ 'auth.register.confirm_password' | t }}</label>              <input
                 id="confirmPassword"
                 type="password"
                 [(ngModel)]="confirmPassword"
@@ -65,12 +67,13 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <button type="submit" class="btn-primary" [disabled]="loading()">
-              {{ loading() ? 'Rejestracja...' : 'Zarejestruj się' }}
+              {{ (loading() ? 'auth.register.loading' : 'auth.register.submit') | t }}
             </button>
           </form>
 
-          <p class="switch-link">
-            Masz już konto? <a routerLink="/login">Zaloguj się</a>
+          <p class="switch-link">{{ 'auth.register.has_account' | t }} 
+            <a routerLink="/login">{{ 'auth.register.login_link' | t }}
+            </a>
           </p>
         </div>
       </div>
