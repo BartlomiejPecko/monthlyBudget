@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+
+      - DB_URL=jdbc:h2:mem:monthlydb;DB_CLOSE_DELAY=-1
+      - JWT_SECRET=MmI1ZDk4NzNhOGQxNGY2MWJjZTRhNzVmNjc4MzBhYjJkZWY0NTY3ODkwYWJjZGVm
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
