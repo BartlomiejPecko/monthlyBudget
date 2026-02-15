@@ -1,0 +1,386 @@
+<div class="goals">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="page-header__left">
+      <h1 class="page-header__title">Goals</h1>
+      <p class="page-header__sub">Track your savings targets</p>
+    </div>
+    @if (!loading() && goals().length > 0) {
+      <button class="btn btn--primary btn--add" (click)="openAddModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        New Goal
+      </button>
+    }
+  </div>
+
+  <!-- Loading -->
+  @if (loading()) {
+    <div class="state-message">
+      <div class="spinner"></div>
+      <p>Loading goals…</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (!loading() && error()) {
+    <div class="state-message state-message--error">
+      <p>{{ error() }}</p>
+      <button class="btn btn--secondary" (click)="loadAll()">Retry</button>
+    </div>
+  }
+
+  <!-- Summary Strip -->
+  @if (!loading() && !error() && goals().length > 0) {
+    <div class="summary-strip">
+      <div class="summary-card summary-card--total">
+        <div class="summary-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Total Goals</span>
+          <span class="summary-card__value">{{ totalGoals() }}</span>
+        </div>
+      </div>
+      <div class="summary-card summary-card--completed">
+        <div class="summary-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Completed</span>
+          <span class="summary-card__value">{{ completedGoals() }}</span>
+        </div>
+      </div>
+      <div class="summary-card summary-card--progress">
+        <div class="summary-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+          </svg>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">In Progress</span>
+          <span class="summary-card__value">{{ inProgressGoals() }}</span>
+        </div>
+      </div>
+      <div class="summary-card summary-card--deadline">
+        <div class="summary-card__icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="summary-card__content">
+          <span class="summary-card__label">Near Deadline</span>
+          <span class="summary-card__value">{{ nearDeadlineGoals() }}</span>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!loading() && !error() && goals().length === 0) {
+    <div class="state-message state-message--empty">
+      <div class="empty-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h3>No goals yet</h3>
+      <p>Set your first savings target to start tracking progress</p>
+      <button class="btn btn--primary btn--add" (click)="openAddModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Create First Goal
+      </button>
+    </div>
+  }
+
+  <!-- Goals Grid -->
+  @if (!loading() && !error() && goals().length > 0) {
+    <div class="goals-grid">
+      @for (goal of goals(); track goal; let i = $index) {
+        <div
+          class="goal-card"
+          [class.goal-card--completed]="goal.progressPercentage >= 100"
+          [style.animation-delay]="i * 60 + 'ms'"
+        >
+          <!-- Header -->
+          <div class="goal-card__header">
+            <div class="goal-card__title-row">
+              <h3 class="goal-card__name">{{ goal.name }}</h3>
+              @if (goal.progressPercentage >= 100) {
+                <span class="goal-card__done-badge">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Done
+                </span>
+              }
+            </div>
+            <div class="goal-card__actions">
+              <button class="icon-btn" title="Add funds" (click)="openFundModal(goal)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+              </button>
+              <button class="icon-btn" title="Edit" (click)="openEditModal(goal)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+              <button class="icon-btn icon-btn--danger" title="Delete" (click)="openDeleteConfirm(goal)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Amount -->
+          <div class="goal-card__amounts">
+            <span class="goal-card__current">{{ formatCurrency(goal.currentAmount) }}</span>
+            <span class="goal-card__separator">of</span>
+            <span class="goal-card__target">{{ formatCurrency(goal.targetAmount) }}</span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="goal-card__progress">
+            <div class="progress-bar">
+              <div
+                class="progress-bar__fill"
+                [class]="getProgressClass(goal.progressPercentage)"
+                [style.width]="(goal.progressPercentage > 100 ? 100 : goal.progressPercentage) + '%'"
+              ></div>
+            </div>
+            <span
+              class="goal-card__pct"
+              [style.color]="getProgressColor(goal.progressPercentage)"
+            >
+              {{ goal.progressPercentage | number:'1.0-1' }}%
+            </span>
+          </div>
+
+          <!-- Footer -->
+          <div class="goal-card__footer">
+            @if (goal.categoryId && getCategoryName(goal.categoryId)) {
+              <span
+                class="goal-card__cat-badge"
+                [style.background]="getCategoryColor(goal.categoryId) + '18'"
+                [style.color]="getCategoryColor(goal.categoryId)"
+              >
+                {{ getCategoryIcon(goal.categoryId) }} {{ getCategoryName(goal.categoryId) }}
+              </span>
+            }
+            @if (goal.deadline) {
+              <span
+                class="goal-card__deadline"
+                [class.goal-card__deadline--overdue]="isOverdue(goal.deadline)"
+                [class.goal-card__deadline--near]="isNearDeadline(goal.deadline)"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                {{ getDeadlineLabel(goal.deadline) }}
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="onBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal__header">
+        <h2>{{ editingGoal() ? 'Edit Goal' : 'New Goal' }}</h2>
+        <button class="icon-btn" (click)="closeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <!-- Name -->
+        <div class="form-group">
+          <label class="form-label" for="goalName">Goal Name</label>
+          <input
+            class="form-input"
+            id="goalName"
+            type="text"
+            placeholder="e.g. New laptop, Vacation fund…"
+            [(ngModel)]="formName"
+            autofocus
+          />
+        </div>
+        <!-- Target Amount -->
+        <div class="form-group">
+          <label class="form-label" for="goalTarget">Target Amount (PLN)</label>
+          <input
+            class="form-input form-input--money"
+            id="goalTarget"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            [(ngModel)]="formTargetAmount"
+          />
+        </div>
+        <!-- Row: Deadline + Category -->
+        <div class="form-row">
+          <div class="form-group form-group--half">
+            <label class="form-label" for="goalDeadline">Deadline</label>
+            <input
+              class="form-input"
+              id="goalDeadline"
+              type="date"
+              [(ngModel)]="formDeadline"
+            />
+          </div>
+          <div class="form-group form-group--half">
+            <label class="form-label" for="goalCategory">Category</label>
+            <select class="form-select" id="goalCategory" [(ngModel)]="formCategoryId">
+              <option [ngValue]="null">No category</option>
+              @for (cat of categories(); track cat) {
+                <option [ngValue]="cat.id">{{ cat.icon }} {{ cat.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (formError) {
+          <div class="form-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ formError }}
+          </div>
+        }
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeModal()" [disabled]="saving()">Cancel</button>
+        <button class="btn btn--primary" (click)="saveGoal()" [disabled]="saving()">
+          @if (saving()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ saving() ? 'Saving…' : (editingGoal() ? 'Update' : 'Create Goal') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Add Funds Modal -->
+@if (showFundModal()) {
+  <div class="modal-backdrop" (click)="onFundBackdropClick($event)">
+    <div class="modal modal--sm" role="dialog" aria-modal="true">
+      <div class="modal__header">
+        <h2>Add Funds</h2>
+        <button class="icon-btn" (click)="closeFundModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <p class="fund-info">
+          Adding funds to <strong>{{ fundingGoal()?.name }}</strong>
+        </p>
+        <div class="fund-progress-summary">
+          <span class="fund-progress-summary__current">{{ formatCurrency(fundingGoal()?.currentAmount || 0) }}</span>
+          <span class="fund-progress-summary__sep">→</span>
+          <span class="fund-progress-summary__new">{{ formatCurrency((fundingGoal()?.currentAmount || 0) + (fundAmount || 0)) }}</span>
+          <span class="fund-progress-summary__of">of {{ formatCurrency(fundingGoal()?.targetAmount || 0) }}</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="fundAmount">Amount (PLN)</label>
+          <input
+            class="form-input form-input--money"
+            id="fundAmount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            [(ngModel)]="fundAmount"
+            autofocus
+          />
+        </div>
+        @if (fundError) {
+          <div class="form-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ fundError }}
+          </div>
+        }
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeFundModal()" [disabled]="fundSaving()">Cancel</button>
+        <button class="btn btn--primary" (click)="saveFund()" [disabled]="fundSaving()">
+          @if (fundSaving()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ fundSaving() ? 'Saving…' : 'Add Funds' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Delete Confirmation -->
+@if (showDeleteConfirm()) {
+  <div class="modal-backdrop" (click)="onDeleteBackdropClick($event)">
+    <div class="modal modal--sm" role="dialog" aria-modal="true">
+      <div class="modal__header modal__header--danger">
+        <div class="modal__danger-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h2>Delete Goal</h2>
+      </div>
+      <div class="modal__body">
+        <p class="delete-message">
+          Are you sure you want to delete <strong>{{ deletingGoal()?.name }}</strong>?
+          All progress will be lost. This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeDeleteConfirm()" [disabled]="deleting()">Cancel</button>
+        <button class="btn btn--danger" (click)="confirmDelete()" [disabled]="deleting()">
+          @if (deleting()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ deleting() ? 'Deleting…' : 'Delete Goal' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

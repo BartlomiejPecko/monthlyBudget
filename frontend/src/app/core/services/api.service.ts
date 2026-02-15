@@ -5,6 +5,7 @@ import { Account, AccountRequest } from '../models/account.model';
 import { Category, CategoryRequest } from '../models/category.model';
 import { Expense, ExpenseRequest } from '../models/expense.model';
 import { Goal, GoalRequest } from '../models/goal.model';
+import { Income, IncomeRequest } from '../models/income.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -94,5 +95,25 @@ export class ApiService {
 
   deleteGoal(id: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/goals/${id}`);
+  }
+
+  getIncomes(): Observable<Income[]> {
+    return this.http.get<Income[]>(`${this.base}/incomes`);
+  }
+
+  getIncome(id: number): Observable<Income> {
+    return this.http.get<Income>(`${this.base}/incomes/${id}`);
+  }
+
+  createIncome(req: IncomeRequest): Observable<Income> {
+    return this.http.post<Income>(`${this.base}/incomes`, req);
+  }
+
+  updateIncome(id: number, req: IncomeRequest): Observable<Income> {
+    return this.http.put<Income>(`${this.base}/incomes/${id}`, req);
+  }
+
+  deleteIncome(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/incomes/${id}`);
   }
 }

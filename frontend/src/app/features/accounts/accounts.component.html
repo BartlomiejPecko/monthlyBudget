@@ -4,13 +4,22 @@
     <h1 class="page-title">Accounts</h1>
     <p class="page-subtitle">Manage your bank accounts and track balances</p>
   </div>
-  <button class="btn btn--primary btn--add" (click)="openAddModal()">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-      <line x1="12" y1="5" x2="12" y2="19"/>
-      <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-    Add Account
-  </button>
+  <div class="page-header__actions">
+    <button class="btn btn--secondary btn--add" (click)="openIncomeModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+      Add Income
+    </button>
+    <button class="btn btn--primary btn--add" (click)="openAddModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Add Account
+    </button>
+  </div>
 </div>
 
 <!-- Summary Cards -->
@@ -28,23 +37,22 @@
         <span class="summary-card__value">{{ formatCurrency(totalBalance()) }}</span>
       </div>
     </div>
-    <div class="summary-card summary-card--initial">
+    <div class="summary-card summary-card--income">
       <div class="summary-card__icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="16"/>
-          <line x1="8" y1="12" x2="16" y2="12"/>
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
         </svg>
       </div>
       <div class="summary-card__content">
-        <span class="summary-card__label">Initial Deposits</span>
-        <span class="summary-card__value">{{ formatCurrency(totalInitial()) }}</span>
+        <span class="summary-card__label">Total Income</span>
+        <span class="summary-card__value">{{ formatCurrency(totalIncome()) }}</span>
       </div>
     </div>
-  <div class="summary-card" [ngClass]="{
-    'summary-card--positive': balanceDiff() >= 0,
-    'summary-card--negative': balanceDiff() < 0
-  }">
+    <div class="summary-card" [ngClass]="{
+      'summary-card--positive': balanceDiff() >= 0,
+      'summary-card--negative': balanceDiff() < 0
+    }">
       <div class="summary-card__icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           @if (balanceDiff() >= 0) {
@@ -94,7 +102,7 @@
       <line x1="9" y1="9" x2="15" y2="15"/>
     </svg>
     <p>{{ error() }}</p>
-    <button class="btn btn--secondary" (click)="loadAccounts()">Retry</button>
+    <button class="btn btn--secondary" (click)="loadAll()">Retry</button>
   </div>
 }
 
@@ -134,6 +142,12 @@
           </div>
           <div class="account-card__name">{{ account.name }}</div>
           <div class="account-card__actions">
+            <button class="icon-btn icon-btn--income" title="Add Income" (click)="openIncomeModal(account.id)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </button>
             <button class="icon-btn" title="Edit" (click)="openEditModal(account)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -151,10 +165,10 @@
         <div class="account-card__balance-section">
           <div class="account-card__current">
             <span class="account-card__current-label">Current Balance</span>
-          <span class="account-card__current-value" [ngClass]="{
-            'positive': account.currentBalance > 0,
-            'negative': account.currentBalance < 0
-          }">{{ formatCurrency(account.currentBalance) }}</span>
+            <span class="account-card__current-value" [ngClass]="{
+              'positive': account.currentBalance > 0,
+              'negative': account.currentBalance < 0
+            }">{{ formatCurrency(account.currentBalance) }}</span>
           </div>
         </div>
         <div class="account-card__footer">
@@ -162,10 +176,18 @@
             <span class="account-card__initial-label">Initial</span>
             <span class="account-card__initial-value">{{ formatCurrency(account.initialBalance) }}</span>
           </div>
-        <div class="account-card__change" [ngClass]="{
-          'positive': account.currentBalance - account.initialBalance >= 0,
-          'negative': account.currentBalance - account.initialBalance < 0
-        }">
+          @if (getAccountIncomeTotal(account.id) > 0) {
+            <div class="account-card__income-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <polyline points="18 15 12 9 6 15"/>
+              </svg>
+              {{ formatCurrency(getAccountIncomeTotal(account.id)) }} income
+            </div>
+          }
+          <div class="account-card__change" [ngClass]="{
+            'positive': account.currentBalance - account.initialBalance >= 0,
+            'negative': account.currentBalance - account.initialBalance < 0
+          }">
             @if (account.currentBalance - account.initialBalance >= 0) {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                 <polyline points="18 15 12 9 6 15"/>
@@ -184,7 +206,61 @@
   </div>
 }
 
-<!-- Add/Edit Modal -->
+<!-- Recent Incomes Section -->
+@if (!loading() && !error() && recentIncomes().length > 0) {
+  <div class="recent-incomes">
+    <div class="recent-incomes__header">
+      <h3 class="recent-incomes__title">Recent Income</h3>
+      <span class="recent-incomes__count">{{ incomes().length }} total</span>
+    </div>
+    <div class="recent-incomes__list">
+      @for (income of recentIncomes(); track income; let i = $index) {
+        <div class="income-row" [style.animation-delay]="i * 40 + 'ms'">
+          <div class="income-row__icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"/>
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+          </div>
+          <div class="income-row__info">
+            <div class="income-row__top">
+              <span class="income-row__desc">{{ income.description || 'Income' }}</span>
+              @if (income.categoryName) {
+                <span class="income-row__cat-badge"
+                  [style.background]="(income.categoryColor || '#6B7B8D') + '18'"
+                  [style.color]="income.categoryColor || '#6B7B8D'">
+                  {{ income.categoryName }}
+                </span>
+              }
+            </div>
+            <div class="income-row__bottom">
+              <span class="income-row__date">{{ formatDate(income.date) }}</span>
+              <span class="income-row__dot">·</span>
+              <span class="income-row__account">{{ income.accountName }}</span>
+            </div>
+          </div>
+          <div class="income-row__amount">+{{ formatCurrency(income.amount) }}</div>
+          <div class="income-row__actions">
+            <button class="icon-btn" title="Edit" (click)="openEditIncomeModal(income)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="icon-btn icon-btn--danger" title="Delete" (click)="openIncomeDeleteConfirm(income)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- Add/Edit Account Modal -->
 @if (showModal()) {
   <div class="modal-backdrop" (click)="onBackdropClick($event)">
     <div class="modal" role="dialog" aria-modal="true">
@@ -208,7 +284,7 @@
             [(ngModel)]="formName"
             (keyup.enter)="saveAccount()"
             autofocus
-            />
+          />
         </div>
         @if (!editingAccount()) {
           <div class="form-group">
@@ -222,7 +298,7 @@
               placeholder="0.00"
               [(ngModel)]="formInitialBalance"
               (keyup.enter)="saveAccount()"
-              />
+            />
           </div>
         }
         @if (formError) {
@@ -249,7 +325,7 @@
   </div>
 }
 
-<!-- Delete Confirmation Modal -->
+<!-- Delete Account Confirmation Modal -->
 @if (showDeleteConfirm()) {
   <div class="modal-backdrop" (click)="onDeleteBackdropClick($event)">
     <div class="modal modal--sm" role="dialog" aria-modal="true">
@@ -266,7 +342,7 @@
       <div class="modal__body">
         <p class="delete-message">
           Are you sure you want to delete <strong>{{ deletingAccount()?.name }}</strong>?
-          This will also remove all expenses linked to this account. This action cannot be undone.
+          This will also remove all expenses and income linked to this account. This action cannot be undone.
         </p>
       </div>
       <div class="modal__footer">
@@ -276,6 +352,128 @@
             <div class="spinner spinner--sm"></div>
           }
           {{ deleting() ? 'Deleting…' : 'Delete Account' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showIncomeModal()) {
+  <div class="modal-backdrop" (click)="onIncomeBackdropClick($event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal__header">
+        <h2>{{ editingIncome() ? 'Edit Income' : 'Add Income' }}</h2>
+        <button class="icon-btn" (click)="closeIncomeModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal__body">
+        <div class="form-group">
+          <label class="form-label" for="incomeAmount">Amount (PLN)</label>
+          <input
+            class="form-input form-input--money"
+            id="incomeAmount"
+            type="number"
+            min="0.01"
+            step="0.01"
+            placeholder="0.00"
+            [(ngModel)]="incomeFormAmount"
+            autofocus
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="incomeDesc">Description</label>
+          <input
+            class="form-input"
+            id="incomeDesc"
+            type="text"
+            placeholder="e.g. Salary, Freelance payment…"
+            [(ngModel)]="incomeFormDescription"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="incomeDate">Date</label>
+          <input
+            class="form-input"
+            id="incomeDate"
+            type="date"
+            [(ngModel)]="incomeFormDate"
+          />
+        </div>
+        <div class="form-row">
+          <div class="form-group form-group--half">
+            <label class="form-label" for="incomeAccount">Account</label>
+            <select class="form-select" id="incomeAccount" [(ngModel)]="incomeFormAccountId">
+              @for (acc of accounts(); track acc) {
+                <option [ngValue]="acc.id">{{ acc.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="form-group form-group--half">
+            <label class="form-label" for="incomeCat">Category</label>
+            <select class="form-select" id="incomeCat" [(ngModel)]="incomeFormCategoryId">
+              <option [ngValue]="null">No category</option>
+              @for (cat of categories(); track cat) {
+                <option [ngValue]="cat.id">{{ cat.icon }} {{ cat.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        @if (incomeFormError) {
+          <div class="form-error">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ incomeFormError }}
+          </div>
+        }
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeIncomeModal()" [disabled]="incomeSaving()">Cancel</button>
+        <button class="btn btn--primary" (click)="saveIncome()" [disabled]="incomeSaving()">
+          @if (incomeSaving()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ incomeSaving() ? 'Saving…' : (editingIncome() ? 'Update' : 'Add Income') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showIncomeDeleteConfirm()) {
+  <div class="modal-backdrop" (click)="onIncomeDeleteBackdropClick($event)">
+    <div class="modal modal--sm" role="dialog" aria-modal="true">
+      <div class="modal__header modal__header--danger">
+        <div class="modal__danger-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h2>Delete Income</h2>
+      </div>
+      <div class="modal__body">
+        <p class="delete-message">
+          Are you sure you want to delete
+          <strong>{{ deletingIncome()?.description || 'this income' }}</strong>
+          ({{ formatCurrency(deletingIncome()?.amount || 0) }})?
+          The account balance will be adjusted. This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--secondary" (click)="closeIncomeDeleteConfirm()" [disabled]="incomeDeleting()">Cancel</button>
+        <button class="btn btn--danger" (click)="confirmIncomeDelete()" [disabled]="incomeDeleting()">
+          @if (incomeDeleting()) {
+            <div class="spinner spinner--sm"></div>
+          }
+          {{ incomeDeleting() ? 'Deleting…' : 'Delete Income' }}
         </button>
       </div>
     </div>

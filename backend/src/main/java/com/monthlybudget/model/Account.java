@@ -34,4 +34,8 @@ public class Account {
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Expense> expenses = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Income> incomes = new ArrayList<>();
 }

@@ -654,3 +654,204 @@
     padding: 0;
   }
 }
+
+.page-header__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.summary-card--income .summary-card__icon {
+  background: rgba(129, 178, 154, 0.12);
+  color: var(--green, #81B29A);
+}
+
+.icon-btn--income:hover {
+  background: rgba(129, 178, 154, 0.1);
+  color: var(--green, #81B29A);
+}
+
+.account-card__income-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(129, 178, 154, 0.1);
+  color: var(--green, #81B29A);
+  white-space: nowrap;
+}
+
+
+.recent-incomes {
+  margin-top: 2rem;
+  animation: fadeSlideUp 0.5s ease-out both;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0;
+  }
+
+  &__count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+}
+
+.income-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s ease;
+  animation: fadeSlideUp 0.35s ease-out both;
+  border-left: 3px solid var(--green, #81B29A);
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: var(--hover); }
+
+  &__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(129, 178, 154, 0.12);
+    color: var(--green, #81B29A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.15rem;
+  }
+
+  &__desc {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 220px;
+  }
+
+  &__cat-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.15rem 0.55rem;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  &__bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  &__dot { opacity: 0.4; }
+
+  &__amount {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--green, #81B29A);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0 0.75rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.2rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &:hover &__actions {
+    opacity: 1;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-group {
+  &--half { flex: 1; min-width: 0; }
+}
+
+.form-select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--bg-input, var(--bg));
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  font-size: 0.925rem;
+  font-family: var(--font-body);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7B8D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.875rem center;
+  padding-right: 2.5rem;
+
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-shadow, rgba(224, 122, 95, 0.15));
+  }
+}
+
+@media (max-width: 640px) {
+  .page-header__actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .income-row__actions {
+    opacity: 1;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+}

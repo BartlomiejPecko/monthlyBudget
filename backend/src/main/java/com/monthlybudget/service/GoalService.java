@@ -70,6 +70,10 @@ public class GoalService {
             goal.setCategory(null);
         }
 
+        if (request.getCurrentAmount() != null) {
+            goal.setCurrentAmount(request.getCurrentAmount());
+        }
+
         return goalMapper.toResponse(goalRepository.save(goal));
     }
 
