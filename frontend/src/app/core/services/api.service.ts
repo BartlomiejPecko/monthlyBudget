@@ -9,8 +9,8 @@ import { Income, IncomeRequest } from '../models/income.model';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
-  private base = 'http://localhost:8080/api';
-
+  //private base = 'http://localhost:8080/api';
+  private base = '/api';
   constructor(private http: HttpClient) {}
 
   // ─── Accounts ──────────────────────────
