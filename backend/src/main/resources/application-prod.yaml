@@ -1,9 +1,12 @@
-
+# application-prod.yaml
 server:
   port: 10000
 
 spring:
   datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driverClassName: org.postgresql.Driver
   h2:
     console:
