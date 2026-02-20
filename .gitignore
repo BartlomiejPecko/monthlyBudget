@@ -17,6 +17,10 @@ frontend/.angular/
 # Env
 .env
 
+# Secrets
+**/application-local.yaml
+.env
+.env.*
 
 /node_modules
 /.pnp

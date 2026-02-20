@@ -23,12 +23,14 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        String normalizedEmail = normalizeEmail(request.getEmail());
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
             throw new BadRequestException("Email already in use");
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(normalizedEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
@@ -39,11 +41,17 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        String normalizedEmail = normalizeEmail(request.getEmail());
+
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(normalizedEmail, request.getPassword())
         );
 
-        String token = jwtUtil.generateToken(request.getEmail());
-        return new AuthResponse(token, request.getEmail());
+        String token = jwtUtil.generateToken(normalizedEmail);
+        return new AuthResponse(token, normalizedEmail);
+    }
+
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase();
     }
 }

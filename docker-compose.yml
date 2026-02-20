@@ -4,14 +4,18 @@ services:
     ports:
       - "8080:8080"
     environment:
-
+      - SPRING_PROFILES_ACTIVE=dev
       - DB_URL=jdbc:h2:mem:monthlydb;DB_CLOSE_DELAY=-1
-      - JWT_SECRET=MmI1ZDk4NzNhOGQxNGY2MWJjZTRhNzVmNjc4MzBhYjJkZWY0NTY3ODkwYWJjZGVm
+      - JWT_SECRET=ZGV2LW9ubHktc2VjcmV0LWtleS0xMjM0NTY3ODkwMTIzNDU2Nzg5MDEyMzQ1Njc4
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/auth/health"]
+      interval: 10s
+      start_period: 30s
 
   frontend:
     build: ./frontend
     ports:
-      - "80:80"
+      - "4200:10000"
     depends_on:
-      - backend
-
+      backend:
+        condition: service_started

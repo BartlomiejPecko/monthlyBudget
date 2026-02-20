@@ -3,20 +3,14 @@ spring:
     name: monthly-budget-api
 
   datasource:
-    url: jdbc:h2:mem:monthlydb;DB_CLOSE_DELAY=-1
+    url: ${DB_URL:jdbc:h2:mem:monthlydb;DB_CLOSE_DELAY=-1}
     driverClassName: org.h2.Driver
-    username: mbSUPER
-    password: x123MM21@X4!
-  h2:
-    console:
-      enabled: true
+    username: ${DB_USER:sa}
+    password: ${DB_PASS:}
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: update
-
-server:
-  port: 10000
+      ddl-auto: ${DDL_AUTO:update}
 
 springdoc:
   swagger-ui:
@@ -24,5 +18,5 @@ springdoc:
 
 app:
   jwt:
-    secret: MmI1ZDk4NzNhOGQxNGY2MWJjZTRhNzVmNjc4MzBhYjJkZWY0NTY3ODkwYWJjZGVm
-    expiration: 86400000
+    secret: ${JWT_SECRET:devDefaultSecret12345678901234567890123456789012}
+    expiration: ${JWT_EXPIRATION:86400000}
