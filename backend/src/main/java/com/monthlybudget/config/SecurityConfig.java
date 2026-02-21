@@ -20,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -33,15 +36,19 @@ public class SecurityConfig {
     @Value("${spring.h2.console.enabled:false}")
     private boolean h2ConsoleEnabled;
 
+    @Value("${springdoc.api-docs.enabled:true}")
+    private boolean swaggerEnabled;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        String[] publicPaths = {
-                "/api/auth/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/v3/api-docs/**"
-        };
+        List<String> paths = new ArrayList<>(List.of("/api/auth/**"));
+
+        if (swaggerEnabled) {
+            paths.addAll(List.of("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"));
+        }
+
+        String[] publicPaths = paths.toArray(new String[0]);
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
