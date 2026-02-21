@@ -3,12 +3,12 @@ spring:
     name: monthly-budget-api
 
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:monthlydb;DB_CLOSE_DELAY=-1}
-    driverClassName: org.h2.Driver
-    username: ${DB_USER:sa}
-    password: ${DB_PASS:}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/monthlydb}
+    driverClassName: org.postgresql.Driver
+    username: ${DB_USER:postgres}
+    password: ${DB_PASS:pass}
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: ${DDL_AUTO:update}
 
