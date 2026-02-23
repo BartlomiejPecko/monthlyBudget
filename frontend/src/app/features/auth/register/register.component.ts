@@ -46,13 +46,14 @@ import { TranslationService } from '../../../core/services/translation.service';
             <div class="field">
               <label for="password">{{ 'auth.register.password' | t }}</label>
               <input
-                id="password"
-                type="password"
-                [(ngModel)]="password"
-                name="password"
-                placeholder="Min. 6 znaków"
-                required
+              id="password"
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Min. 8 znaków, Aa1@"
+              required
               />
+                <span class="field-hint">8-36 znaków, wielka i mała litera, cyfra, znak specjalny</span>
             </div>
 
             <div class="field">
@@ -152,13 +153,41 @@ export class RegisterComponent {
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  onSubmit() {
-    if (this.password !== this.confirmPassword) {
-      this.error.set('Hasła nie są identyczne');
+
+onSubmit() {
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email)) {
+      this.error.set('Podaj prawidłowy adres email');
       return;
     }
-    if (this.password.length < 6) {
-      this.error.set('Hasło musi mieć minimum 6 znaków');
+    if (this.email.length > 64) {
+      this.error.set('Email nie może przekraczać 64 znaków');
+      return;
+    }
+
+    if (this.password.length < 8 || this.password.length > 36) {
+      this.error.set('Hasło musi mieć od 8 do 36 znaków');
+      return;
+    }
+    if (!/[a-z]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać małą literę');
+      return;
+    }
+    if (!/[A-Z]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać wielką literę');
+      return;
+    }
+    if (!/\d/.test(this.password)) {
+      this.error.set('Hasło musi zawierać cyfrę');
+      return;
+    }
+    if (!/[@$!%*?&#^()\-_+=]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać znak specjalny (@$!%*?&#^()-_+=)');
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      this.error.set('Hasła nie są identyczne');
       return;
     }
 
@@ -172,5 +201,5 @@ export class RegisterComponent {
         this.error.set(err.error?.message || 'Błąd rejestracji');
       },
     });
-  }
+}
 }

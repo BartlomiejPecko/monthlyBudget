@@ -6,7 +6,6 @@ import { AuthResponse, LoginRequest, RegisterRequest } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  //private readonly API = 'http://localhost:8080/api/auth';
   private readonly API = '/api/auth';
   private readonly TOKEN_KEY = 'budget_token';
   private readonly EMAIL_KEY = 'budget_email';
@@ -26,9 +25,8 @@ export class AuthService {
   }
 
   register(req: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API}/register`, req).pipe(
-      tap(res => this.handleAuth(res))
-    );
+  return this.http.post<AuthResponse>(`${this.API}/register`, req);
+  // No tap — don't save token, user isn't verified yet
   }
 
   logout(): void {
@@ -48,9 +46,11 @@ export class AuthService {
   }
 
   private handleAuth(res: AuthResponse): void {
-    localStorage.setItem(this.TOKEN_KEY, res.token);
+    if (res.token) {
+      localStorage.setItem(this.TOKEN_KEY, res.token);
+      this._isLoggedIn.set(true);
+    }
     localStorage.setItem(this.EMAIL_KEY, res.email);
-    this._isLoggedIn.set(true);
     this._email.set(res.email);
-  }
+}
 }

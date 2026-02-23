@@ -232,9 +232,16 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
-        this.loading.set(false);
-        this.error.set(err.error?.message || 'Nieprawidłowy email lub hasło');
-      },
+  this.loading.set(false);
+  const msg = err.error?.message || '';
+  if (msg.includes('verify your email')) {
+    this.router.navigate(['/check-email'], {
+      queryParams: { email: this.email }
+    });
+    } else {
+    this.error.set(msg || 'Nieprawidłowy email lub hasło');
+    }
+    }
     });
   }
 }
