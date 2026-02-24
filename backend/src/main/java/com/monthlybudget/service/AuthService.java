@@ -21,7 +21,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
-    private final VerificationService verificationService;
 
     public AuthResponse register(RegisterRequest request) {
         String normalizedEmail = normalizeEmail(request.getEmail());
@@ -33,29 +32,16 @@ public class AuthService {
         User user = User.builder()
                 .email(normalizedEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .emailVerified(false)
                 .build();
 
         userRepository.save(user);
 
-        // Send verification email instead of returning a JWT immediately
-        verificationService.createAndSendToken(user);
-
-        // Return a response WITHOUT a token — user must verify first
-        return new AuthResponse(null, user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token, user.getEmail());
     }
 
     public AuthResponse login(LoginRequest request) {
         String normalizedEmail = normalizeEmail(request.getEmail());
-
-        // Check verification BEFORE authenticating password
-        User user = userRepository.findByEmail(normalizedEmail)
-                .orElseThrow(() -> new BadRequestException("Invalid credentials"));
-
-        if (!user.getEmailVerified()) {
-            throw new BadRequestException(
-                    "Please verify your email before logging in. Check your inbox.");
-        }
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(normalizedEmail, request.getPassword())

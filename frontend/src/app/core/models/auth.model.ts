@@ -9,6 +9,6 @@ export interface RegisterRequest {
 }
 
 export interface AuthResponse {
-  token: string | null;
+  token: string;
   email: string;
 }

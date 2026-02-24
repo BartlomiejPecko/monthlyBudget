@@ -9,7 +9,3 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-app:
-  jwt:
-    secret: devOnlyLocalSecret123456789012345678901234567890123456
