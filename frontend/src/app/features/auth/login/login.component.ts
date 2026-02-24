@@ -5,12 +5,13 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';   
+import { GoogleSigninComponent } from '../../../shared/components/google-signin/google-signin.component';
 import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, TranslatePipe],
+  imports: [FormsModule, RouterLink, TranslatePipe, GoogleSigninComponent],
   template: `
     <div class="auth-page">
       <div class="auth-left">
@@ -59,6 +60,16 @@ import { TranslationService } from '../../../core/services/translation.service';
               {{ (loading() ? 'auth.login.loading' : 'auth.login.submit') | t  }}
             </button>
           </form>
+
+          <div class="divider">
+            <span>{{ 'auth.or' | t }}</span>
+          </div>
+
+          <app-google-signin (credentialReceived)="onGoogleLogin($event)" />
+
+          @if (googleError()) {
+            <div class="error-msg">{{ googleError() }}</div>
+          }
 
           <p class="switch-link">{{ 'auth.login.no_account' | t }} 
           <a routerLink="/register">{{ 'auth.login.register_link' | t }}</a>
@@ -197,6 +208,27 @@ import { TranslationService } from '../../../core/services/translation.service';
       &:disabled { opacity: 0.6; cursor: not-allowed; }
     }
 
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      gap: 16px;
+
+      &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      span {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
     .switch-link {
       text-align: center;
       margin-top: 28px;
@@ -234,6 +266,24 @@ export class LoginComponent {
       error: (err) => {
         this.loading.set(false);
         this.error.set(err.error?.message || 'Nieprawidłowy email lub hasło');
+      },
+    });
+  }
+
+  googleError = signal('');
+
+  onGoogleLogin(credential: string) {
+    this.loading.set(true);
+    this.error.set('');
+    this.googleError.set('');
+
+    this.auth.googleLogin(credential).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.googleError.set(err.error?.message || 'Google login failed');
       },
     });
   }

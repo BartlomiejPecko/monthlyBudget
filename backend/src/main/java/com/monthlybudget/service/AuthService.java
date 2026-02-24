@@ -1,11 +1,14 @@
 package com.monthlybudget.service;
 
+import com.monthlybudget.dto.request.GoogleLoginRequest;
 import com.monthlybudget.dto.request.LoginRequest;
 import com.monthlybudget.dto.request.RegisterRequest;
 import com.monthlybudget.dto.response.AuthResponse;
 import com.monthlybudget.exception.BadRequestException;
+import com.monthlybudget.model.AuthProvider;
 import com.monthlybudget.model.User;
 import com.monthlybudget.repository.UserRepository;
+import com.monthlybudget.security.GoogleTokenVerifier;
 import com.monthlybudget.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +24,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final GoogleTokenVerifier googleTokenVerifier;
 
     public AuthResponse register(RegisterRequest request) {
         String normalizedEmail = normalizeEmail(request.getEmail());
@@ -32,6 +36,7 @@ public class AuthService {
         User user = User.builder()
                 .email(normalizedEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
+                .authProvider(AuthProvider.LOCAL)
                 .build();
 
         userRepository.save(user);
@@ -49,6 +54,31 @@ public class AuthService {
 
         String token = jwtUtil.generateToken(normalizedEmail);
         return new AuthResponse(token, normalizedEmail);
+    }
+
+    public AuthResponse googleLogin(GoogleLoginRequest request) {
+        String email = googleTokenVerifier.verify(request.getCredential())
+                .orElseThrow(() -> new BadRequestException("Invalid Google token"));
+
+        String normalizedEmail = normalizeEmail(email);
+
+        User user = userRepository.findByEmail(normalizedEmail)
+                .orElseGet(() -> {
+                    User newUser = User.builder()
+                            .email(normalizedEmail)
+                            .password(null)
+                            .authProvider(AuthProvider.GOOGLE)
+                            .build();
+                    return userRepository.save(newUser);
+                });
+
+        if (user.getAuthProvider() == AuthProvider.LOCAL) {
+            throw new BadRequestException(
+                    "This email is registered with password. Please login with your password.");
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        return new AuthResponse(token, user.getEmail());
     }
 
     private String normalizeEmail(String email) {

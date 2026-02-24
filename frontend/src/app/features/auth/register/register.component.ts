@@ -5,12 +5,13 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 
 import { TranslatePipe } from '../../../core/pipes/translate.pipe';   
+import { GoogleSigninComponent } from '../../../shared/components/google-signin/google-signin.component';
 import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, RouterLink, TranslatePipe],
+  imports: [FormsModule, RouterLink, TranslatePipe, GoogleSigninComponent],
   template: `
     <div class="auth-page">
       <div class="auth-left">
@@ -38,7 +39,7 @@ import { TranslationService } from '../../../core/services/translation.service';
                 type="email"
                 [(ngModel)]="email"
                 name="email"
-                placeholder="jan@example.com"
+                placeholder="email@example.com"
                 required
               />
             </div>
@@ -46,13 +47,14 @@ import { TranslationService } from '../../../core/services/translation.service';
             <div class="field">
               <label for="password">{{ 'auth.register.password' | t }}</label>
               <input
-                id="password"
-                type="password"
-                [(ngModel)]="password"
-                name="password"
-                placeholder="Min. 6 znaków"
-                required
+              id="password"
+              type="password"
+              [(ngModel)]="password"
+              name="password"
+              placeholder="Min. 8 znaków, Aa1@"
+              required
               />
+                <span class="field-hint">8-36 znaków, wielka i mała litera, cyfra, znak specjalny</span>
             </div>
 
             <div class="field">
@@ -71,6 +73,16 @@ import { TranslationService } from '../../../core/services/translation.service';
             </button>
           </form>
 
+            <div class="divider">
+            <span>{{ 'auth.or' | t }}</span>
+          </div>
+
+          <app-google-signin (credentialReceived)="onGoogleLogin($event)" />
+
+          @if (googleError()) {
+            <div class="error-msg">{{ googleError() }}</div>
+          }
+
           <p class="switch-link">{{ 'auth.register.has_account' | t }} 
             <a routerLink="/login">{{ 'auth.register.login_link' | t }}
             </a>
@@ -86,6 +98,28 @@ import { TranslationService } from '../../../core/services/translation.service';
       flex: 1; background: var(--green); position: relative;
       overflow: hidden; display: flex; align-items: flex-end; padding: 60px;
     }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      gap: 16px;
+
+      &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+        span {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+  }
+
     .brand-pattern {
       position: absolute; inset: 0;
       background:
@@ -116,6 +150,12 @@ import { TranslationService } from '../../../core/services/translation.service';
     .auth-form { display: flex; flex-direction: column; gap: 20px; }
     .field { display: flex; flex-direction: column; gap: 6px; }
     label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+
+    .field-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    }
 
     input {
       padding: 14px 16px; border-radius: 12px; border: 1px solid var(--border);
@@ -149,16 +189,45 @@ export class RegisterComponent {
   confirmPassword = '';
   loading = signal(false);
   error = signal('');
+  googleError = signal('');
 
   constructor(private auth: AuthService, private router: Router) {}
 
-  onSubmit() {
-    if (this.password !== this.confirmPassword) {
-      this.error.set('Hasła nie są identyczne');
+
+onSubmit() {
+    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(this.email)) {
+      this.error.set('Podaj prawidłowy adres email');
       return;
     }
-    if (this.password.length < 6) {
-      this.error.set('Hasło musi mieć minimum 6 znaków');
+    if (this.email.length > 64) {
+      this.error.set('Email nie może przekraczać 64 znaków');
+      return;
+    }
+
+    if (this.password.length < 8 || this.password.length > 36) {
+      this.error.set('Hasło musi mieć od 8 do 36 znaków');
+      return;
+    }
+    if (!/[a-z]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać małą literę');
+      return;
+    }
+    if (!/[A-Z]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać wielką literę');
+      return;
+    }
+    if (!/\d/.test(this.password)) {
+      this.error.set('Hasło musi zawierać cyfrę');
+      return;
+    }
+    if (!/[@$!%*?&#^()\-_+=]/.test(this.password)) {
+      this.error.set('Hasło musi zawierać znak specjalny (@$!%*?&#^()-_+=)');
+      return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      this.error.set('Hasła nie są identyczne');
       return;
     }
 
@@ -166,10 +235,28 @@ export class RegisterComponent {
     this.error.set('');
 
     this.auth.register({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+            next: () => {
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.loading.set(false);
-        this.error.set(err.error?.message || 'Błąd rejestracji');
+        this.error.set(err.error?.message || 'Registration failed');
+      },
+    });
+  }
+
+  onGoogleLogin(credential: string) {
+    this.loading.set(true);
+    this.error.set('');
+    this.googleError.set('');
+
+    this.auth.googleLogin(credential).subscribe({
+      next: () => {
+        this.router.navigate(['/dashboard']);
+      },
+      error: (err) => {
+        this.loading.set(false);
+        this.googleError.set(err.error?.message || 'Google login failed');
       },
     });
   }

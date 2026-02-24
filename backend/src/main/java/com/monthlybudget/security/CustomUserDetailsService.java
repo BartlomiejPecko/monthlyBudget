@@ -21,6 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         com.monthlybudget.model.User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + email));
 
+        String password = user.getPassword() != null ? user.getPassword() : "";
+
         return new User(user.getEmail(), user.getPassword(), Collections.emptyList());
     }
 }

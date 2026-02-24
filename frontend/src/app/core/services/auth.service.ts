@@ -31,6 +31,12 @@ export class AuthService {
     );
   }
 
+  googleLogin(credential: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API}/google`, { credential }).pipe(
+      tap(res => this.handleAuth(res))
+    );
+  }
+
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.EMAIL_KEY);
