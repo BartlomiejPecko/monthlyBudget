@@ -31,61 +31,50 @@ import { TranslationService } from '../../../core/services/translation.service';
             <div class="error-msg">{{ error() }}</div>
           }
 
-          <form (ngSubmit)="onSubmit()" class="auth-form">
-            <div class="field">
-              <label for="email">{{ 'auth.register.email' | t }}</label>
-              <input
-                id="email"
-                type="email"
-                [(ngModel)]="email"
-                name="email"
-                placeholder="email@example.com"
-                required
-              />
-            </div>
-
-            <div class="field">
-              <label for="password">{{ 'auth.register.password' | t }}</label>
-              <input
-              id="password"
-              type="password"
-              [(ngModel)]="password"
-              name="password"
-              placeholder="Min. 8 znaków, Aa1@"
-              required
-              />
-                <span class="field-hint">8-36 znaków, wielka i mała litera, cyfra, znak specjalny</span>
-            </div>
-
-            <div class="field">
-              <label for="confirmPassword">{{ 'auth.register.confirm_password' | t }}</label>              <input
-                id="confirmPassword"
-                type="password"
-                [(ngModel)]="confirmPassword"
-                name="confirmPassword"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            <button type="submit" class="btn-primary" [disabled]="loading()">
-              {{ (loading() ? 'auth.register.loading' : 'auth.register.submit') | t }}
-            </button>
-          </form>
-
-            <div class="divider">
-            <span>{{ 'auth.or' | t }}</span>
-          </div>
-
           <app-google-signin (credentialReceived)="onGoogleLogin($event)" />
 
           @if (googleError()) {
-            <div class="error-msg">{{ googleError() }}</div>
+            <div class="error-msg" style="margin-top: 12px">{{ googleError() }}</div>
           }
 
+          <div class="divider">
+            <span>{{ 'auth.or' | t }}</span>
+          </div>
+          <div class="form-disabled-wrapper">
+            <div class="disabled-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                   stroke="currentColor" stroke-width="2.2" width="16" height="16">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              Tymczasowo niedostępne
+            </div>
+
+            <div class="auth-form disabled-form">
+              <div class="field">
+                <label>{{ 'auth.register.email' | t }}</label>
+                <input type="email" placeholder="email@example.com" disabled />
+              </div>
+
+              <div class="field">
+                <label>{{ 'auth.register.password' | t }}</label>
+                <input type="password" placeholder="Min. 8 znaków, Aa1@" disabled />
+                <span class="field-hint">8-36 znaków, wielka i mała litera, cyfra, znak specjalny</span>
+              </div>
+
+              <div class="field">
+                <label>{{ 'auth.register.confirm_password' | t }}</label>
+                <input type="password" placeholder="••••••••" disabled />
+              </div>
+
+              <button type="button" class="btn-primary" disabled>
+                {{ 'auth.register.submit' | t }}
+              </button>
+            </div>
+          </div>
+
           <p class="switch-link">{{ 'auth.register.has_account' | t }} 
-            <a routerLink="/login">{{ 'auth.register.login_link' | t }}
-            </a>
+            <a routerLink="/login">{{ 'auth.register.login_link' | t }}</a>
           </p>
         </div>
       </div>
@@ -98,27 +87,6 @@ import { TranslationService } from '../../../core/services/translation.service';
       flex: 1; background: var(--green); position: relative;
       overflow: hidden; display: flex; align-items: flex-end; padding: 60px;
     }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 24px 0;
-      gap: 16px;
-
-      &::before, &::after {
-        content: '';
-        flex: 1;
-        height: 1px;
-        background: var(--border);
-      }
-
-        span {
-        font-size: 13px;
-        color: var(--text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-  }
 
     .brand-pattern {
       position: absolute; inset: 0;
@@ -152,9 +120,9 @@ import { TranslationService } from '../../../core/services/translation.service';
     label { font-size: 13px; font-weight: 500; color: var(--text-muted); }
 
     .field-hint {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
     }
 
     input {
@@ -175,75 +143,88 @@ import { TranslationService } from '../../../core/services/translation.service';
       &:disabled { opacity: 0.6; cursor: not-allowed; }
     }
 
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      gap: 16px;
+
+      &::before, &::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      span {
+        font-size: 13px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
     .switch-link {
       text-align: center; margin-top: 28px; font-size: 14px; color: var(--text-muted);
       a { color: var(--green); font-weight: 600; &:hover { text-decoration: underline; } }
+    }
+
+    /* Disabled form overlay */
+    .form-disabled-wrapper {
+      position: relative;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .disabled-form {
+      opacity: 0.35;
+      filter: grayscale(30%);
+    }
+
+    .disabled-form input {
+      background: var(--border);
+      color: var(--text-dim);
+      cursor: not-allowed;
+    }
+
+    .disabled-form .btn-primary {
+      background: var(--border);
+      color: var(--text-dim);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .disabled-badge {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-2deg);
+      z-index: 5;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(6px);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      pointer-events: none;
     }
 
     @media (max-width: 768px) { .auth-left { display: none; } }
   `],
 })
 export class RegisterComponent {
-  email = '';
-  password = '';
-  confirmPassword = '';
   loading = signal(false);
   error = signal('');
   googleError = signal('');
 
   constructor(private auth: AuthService, private router: Router) {}
-
-
-onSubmit() {
-    const emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(this.email)) {
-      this.error.set('Podaj prawidłowy adres email');
-      return;
-    }
-    if (this.email.length > 64) {
-      this.error.set('Email nie może przekraczać 64 znaków');
-      return;
-    }
-
-    if (this.password.length < 8 || this.password.length > 36) {
-      this.error.set('Hasło musi mieć od 8 do 36 znaków');
-      return;
-    }
-    if (!/[a-z]/.test(this.password)) {
-      this.error.set('Hasło musi zawierać małą literę');
-      return;
-    }
-    if (!/[A-Z]/.test(this.password)) {
-      this.error.set('Hasło musi zawierać wielką literę');
-      return;
-    }
-    if (!/\d/.test(this.password)) {
-      this.error.set('Hasło musi zawierać cyfrę');
-      return;
-    }
-    if (!/[@$!%*?&#^()\-_+=]/.test(this.password)) {
-      this.error.set('Hasło musi zawierać znak specjalny (@$!%*?&#^()-_+=)');
-      return;
-    }
-
-    if (this.password !== this.confirmPassword) {
-      this.error.set('Hasła nie są identyczne');
-      return;
-    }
-
-    this.loading.set(true);
-    this.error.set('');
-
-    this.auth.register({ email: this.email, password: this.password }).subscribe({
-            next: () => {
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        this.error.set(err.error?.message || 'Registration failed');
-      },
-    });
-  }
 
   onGoogleLogin(credential: string) {
     this.loading.set(true);
