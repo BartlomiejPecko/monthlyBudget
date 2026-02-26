@@ -29,10 +29,10 @@ import { ThemeService } from '../../core/services/theme.service';
             {{ (theme.isDark() ? 'nav.theme_light' : 'nav.theme_dark') | t }}
           </button>
 
-          <button class="nav-item" (click)="i18n.toggle()">
-            <span class="nav-icon">🌐</span>
-            {{ 'lang.switch' | t }}
-          </button>
+          <div class="lang-switch" (click)="i18n.toggle()">
+          <span class="lang-option" [class.active]="i18n.isPolish()">PL</span>
+          <span class="lang-option" [class.active]="i18n.isEnglish()">EN</span>
+          </div>
     
           <div class="user-card">
             <div class="user-label">{{ 'nav.logged_as' | t }}</div>
@@ -114,6 +114,36 @@ import { ThemeService } from '../../core/services/theme.service';
         background: var(--accent-soft);
         color: var(--accent);
         font-weight: 600;
+      }
+    }
+
+    .lang-switch {
+      display: flex;
+      align-items: center;
+      background: var(--bg-input, var(--hover));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 3px;
+      cursor: pointer;
+      gap: 2px;
+      margin: 4px 0;
+    }
+
+    .lang-option {
+      flex: 1;
+      text-align: center;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.25s ease;
+      user-select: none;
+
+      &.active {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 2px 8px var(--accent-shadow, rgba(224, 122, 95, 0.3));
       }
     }
 
