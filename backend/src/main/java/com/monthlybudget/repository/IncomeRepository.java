@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IncomeRepository extends JpaRepository<Income, Long> {
     List<Income> findByAccountId(Long accountId);
-    List<Income> findByAccountUserIdOrderByDateDesc(Long userId);
+    List<Income> findByAccountUserIdOrderByDateDescIdDesc(Long userId);
     List<Income> findByAccountUserIdAndDateBetween(Long userId, LocalDate from, LocalDate to);
     List<Income> findByCategoryId(Long categoryId);
 }

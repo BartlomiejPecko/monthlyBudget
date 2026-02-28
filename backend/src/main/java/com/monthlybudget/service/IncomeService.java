@@ -31,7 +31,7 @@ public class IncomeService {
     public List<IncomeResponse> getAllForCurrentUser() {
         User user = authHelper.getCurrentUser();
         return incomeMapper.toResponseList(
-                incomeRepository.findByAccountUserIdOrderByDateDesc(user.getId())
+                incomeRepository.findByAccountUserIdOrderByDateDescIdDesc(user.getId())
         );
     }
 
@@ -75,16 +75,26 @@ public class IncomeService {
 
     @Transactional
     public IncomeResponse update(Long id, IncomeRequest request) {
+        User user = authHelper.getCurrentUser();
         Income income = findIncomeOwned(id);
-        Account account = income.getAccount();
+        Account oldAccount = income.getAccount();
 
-        account.setCurrentBalance(account.getCurrentBalance().subtract(income.getAmount()));
+        oldAccount.setCurrentBalance(oldAccount.getCurrentBalance().subtract(income.getAmount()));
+        accountRepository.save(oldAccount);
 
-        account.setCurrentBalance(account.getCurrentBalance().add(request.getAmount()));
+        Account newAccount = accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Account", request.getAccountId()));
+        if (!newAccount.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Account", request.getAccountId());
+        }
+
+        newAccount.setCurrentBalance(newAccount.getCurrentBalance().add(request.getAmount()));
+        accountRepository.save(newAccount);
 
         income.setAmount(request.getAmount());
         income.setDescription(request.getDescription());
         income.setDate(request.getDate());
+        income.setAccount(newAccount);
 
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
@@ -94,7 +104,6 @@ public class IncomeService {
             income.setCategory(null);
         }
 
-        accountRepository.save(account);
         return incomeMapper.toResponse(incomeRepository.save(income));
     }
 

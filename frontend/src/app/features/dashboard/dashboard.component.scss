@@ -132,6 +132,16 @@
   margin-bottom: 1.75rem;
 }
 
+.stat-card--income {
+  .stat-card__icon {
+    background: rgba(#81B29A, 0.15); 
+    color: #81B29A;
+  }
+  .stat-card__accent-line {
+    background: linear-gradient(90deg, #81B29A, #3D9970);
+  }
+}
+
 .chart-card {
   background: var(--bg-card);
   border: 1px solid var(--border);

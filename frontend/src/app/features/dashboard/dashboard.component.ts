@@ -15,7 +15,7 @@ import {
   PieController,
 } from 'chart.js';
 import { ApiService } from '../../core/services/api.service';
-import { Expense, Account, Category } from '../../core/models';
+import { Expense, Account, Category, Income } from '../../core/models';
 
 Chart.register(
   ArcElement,
@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
   accounts = signal<Account[]>([]);
   categories = signal<Category[]>([]);
   loading = signal(true);
+  incomes = signal<Income[]>([]);
 
   // Stats
   totalBalance = computed(() =>
@@ -58,17 +59,17 @@ export class DashboardComponent implements OnInit {
       .reduce((s, e) => s + e.amount, 0);
   });
 
-  currentMonthReturns = computed(() => {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = now.getMonth();
-    return this.expenses()
-      .filter((e) => {
-        const d = new Date(e.date);
-        return d.getFullYear() === y && d.getMonth() === m && e.isReturn;
-      })
-      .reduce((s, e) => s + e.amount, 0);
-  });
+  currentMonthIncome = computed(() => {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  return this.incomes()
+    .filter((i) => {
+      const d = new Date(i.date);
+      return d.getFullYear() === y && d.getMonth() === m;
+    })
+    .reduce((s, i) => s + i.amount, 0);
+});
 
   totalAccounts = computed(() => this.accounts().length);
 
@@ -248,7 +249,7 @@ export class DashboardComponent implements OnInit {
     let loaded = 0;
     const done = () => {
       loaded++;
-      if (loaded >= 3) this.loading.set(false);
+      if (loaded >= 4) this.loading.set(false);
     };
 
     this.api.getExpenses().subscribe({
@@ -263,6 +264,10 @@ export class DashboardComponent implements OnInit {
       next: (d) => { this.categories.set(d); done(); },
       error: () => done(),
     });
+    this.api.getIncomes().subscribe({
+    next: (d) => { this.incomes.set(d); done(); },
+    error: () => done(),
+  });
   }
 
   formatCurrency(value: number): string {

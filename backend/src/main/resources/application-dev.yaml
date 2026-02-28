@@ -12,5 +12,5 @@ spring:
 
 app:
   jwt:
-    secret: ${JWT_SECRET:3f8a2b1c9d4e7f6a5b0c3d2e1f4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a}
+    secret: ${JWT_SECRET:3f8a2b1c9d4e7f6a5b0c3d2e1f4a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f5a}
     expiration: 86400000

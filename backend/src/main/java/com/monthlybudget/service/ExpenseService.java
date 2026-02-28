@@ -31,7 +31,7 @@ public class ExpenseService {
     public List<ExpenseResponse> getAllForCurrentUser() {
         User user = authHelper.getCurrentUser();
         return expenseMapper.toResponseList(
-                expenseRepository.findByAccountUserIdOrderByDateDesc(user.getId())
+                expenseRepository.findByAccountUserIdOrderByDateDescIdDesc(user.getId())
         );
     }
 
@@ -79,33 +79,35 @@ public class ExpenseService {
     @Transactional
     public ExpenseResponse update(Long id, ExpenseRequest request) {
         Expense expense = findExpenseOwned(id);
-        Account account = expense.getAccount();
+        Account oldAccount = expense.getAccount();
 
-        // Cofnij stary wpływ na saldo
         if (Boolean.TRUE.equals(expense.getIsReturn())) {
-            account.setCurrentBalance(account.getCurrentBalance().subtract(expense.getAmount()));
+            oldAccount.setCurrentBalance(oldAccount.getCurrentBalance().subtract(expense.getAmount()));
         } else {
-            account.setCurrentBalance(account.getCurrentBalance().add(expense.getAmount()));
+            oldAccount.setCurrentBalance(oldAccount.getCurrentBalance().add(expense.getAmount()));
         }
+        accountRepository.save(oldAccount);
+        Account newAccount = accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new ResourceNotFoundException("Account", request.getAccountId()));
 
-        // Zastosuj nowy
         boolean newIsReturn = request.getIsReturn() != null && request.getIsReturn();
         if (newIsReturn) {
-            account.setCurrentBalance(account.getCurrentBalance().add(request.getAmount()));
+            newAccount.setCurrentBalance(newAccount.getCurrentBalance().add(request.getAmount()));
         } else {
-            account.setCurrentBalance(account.getCurrentBalance().subtract(request.getAmount()));
+            newAccount.setCurrentBalance(newAccount.getCurrentBalance().subtract(request.getAmount()));
         }
 
         expense.setAmount(request.getAmount());
         expense.setDescription(request.getDescription());
         expense.setDate(request.getDate());
         expense.setIsReturn(newIsReturn);
+        expense.setAccount(newAccount);
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category", request.getCategoryId()));
         expense.setCategory(category);
 
-        accountRepository.save(account);
+        accountRepository.save(newAccount);
         return expenseMapper.toResponse(expenseRepository.save(expense));
     }
 
