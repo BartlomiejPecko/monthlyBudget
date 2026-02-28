@@ -28,7 +28,7 @@ public class User {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     @Builder.Default
     private AuthProvider authProvider = AuthProvider.LOCAL;
 
