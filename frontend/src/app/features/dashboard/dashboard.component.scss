@@ -6,9 +6,16 @@
 
 // ─── Greeting ──────────────────────────────────────────
 
-.greeting {
+.greeting-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 2rem;
   animation: fadeSlideDown 0.4s ease-out;
+}
+
+.greeting {
 
   &__title {
     font-family: var(--font-display);
@@ -24,6 +31,118 @@
     color: var(--text-muted);
     margin: 0;
   }
+}
+
+.account-filter {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.account-filter__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: var(--accent);
+    background: var(--hover);
+  }
+
+  svg {
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+}
+
+.account-filter__label {
+  color: var(--text);
+}
+
+.account-filter__chevron {
+  transition: transform 0.2s ease;
+
+  &--open {
+    transform: rotate(180deg);
+  }
+}
+
+.account-filter__dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 260px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+  padding: 0.5rem 0;
+  animation: fadeSlideDown 0.2s ease-out;
+}
+
+.account-filter__item {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-size: 0.825rem;
+  color: var(--text);
+  transition: background 0.15s ease;
+  user-select: none;
+
+  &:hover {
+    background: var(--hover);
+  }
+
+  input[type='checkbox'] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  &--all {
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+}
+
+.account-filter__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-filter__balance {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.account-filter__divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0.35rem 0;
 }
 
 // ─── Stat Cards ────────────────────────────────────────
@@ -402,4 +521,25 @@
   .recent-row {
     padding: 0.75rem 1rem;
   }
+
+  .greeting-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .account-filter {
+    width: 100%;
+  }
+
+  .account-filter__trigger {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .account-filter__dropdown {
+    left: 0;
+    right: 0;
+    min-width: auto;
+  }
+  
 }

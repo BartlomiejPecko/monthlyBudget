@@ -33,21 +33,22 @@ export class CategoriesComponent implements OnInit {
   formIsDefault = false;
   formError = '';
 
-  // Preset colors from design system
   colorPresets = [
-    { name: 'Terracotta', value: '#E07A5F' },
-    { name: 'Green', value: '#81B29A' },
-    { name: 'Sand', value: '#F2CC8F' },
-    { name: 'Plum', value: '#BC6C8A' },
-    { name: 'Navy', value: '#3D405B' },
-    { name: 'Sky', value: '#5B9BD5' },
-    { name: 'Lavender', value: '#9B8EC4' },
-    { name: 'Coral', value: '#F4845F' },
-    { name: 'Mint', value: '#56C596' },
-    { name: 'Amber', value: '#E6A23C' },
-    { name: 'Rose', value: '#E8657D' },
-    { name: 'Slate', value: '#6B7B8D' },
-  ];
+  { name: 'Red',     value: '#E05555' },  
+  { name: 'Orange',  value: '#E87C30' },   
+  { name: 'Amber',   value: '#E8B830' },   
+  { name: 'Lime',    value: '#7DC44E' },   
+  { name: 'Green',   value: '#2DB87A' },   
+  { name: 'Teal',    value: '#1AADA8' },   
+  { name: 'Cyan',    value: '#2BAFD4' },   
+  { name: 'Blue',    value: '#4580E8' },   
+  { name: 'Indigo',  value: '#7055E0' },   
+  { name: 'Violet',  value: '#A84DD4' },   
+  { name: 'Pink',    value: '#D44EA6' },   
+  { name: 'Rose',    value: '#E04070' },  
+  { name: 'Copper',  value: '#C47840' }, 
+  { name: 'Sage',    value: '#7DAA80' },
+];
 
   // Icon options (emoji-style labels)
   iconPresets = [

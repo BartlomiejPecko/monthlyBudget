@@ -6,9 +6,59 @@
 
 <div class="dashboard" *ngIf="!loading()">
   <!-- Greeting -->
-  <div class="greeting">
-    <h1 class="greeting__title">Welcome back</h1>
-    <p class="greeting__sub">Here's your financial overview</p>
+  <div class="greeting-row">
+    <div class="greeting">
+      <h1 class="greeting__title">Welcome back</h1>
+      <p class="greeting__sub">Here's your financial overview</p>
+    </div>
+
+    <div class="account-filter" *ngIf="accounts().length > 0">
+      <button
+        class="account-filter__trigger"
+        (click)="toggleFilterDropdown(); $event.stopPropagation()"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+        <span class="account-filter__label">
+          {{ allAccountsSelected()
+            ? 'All Accounts'
+            : selectedAccountIds().size + ' of ' + accounts().length + ' accounts' }}
+        </span>
+        <svg
+          class="account-filter__chevron"
+          [class.account-filter__chevron--open]="filterDropdownOpen()"
+          width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+        >
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </button>
+
+      <div class="account-filter__dropdown" *ngIf="filterDropdownOpen()">
+        <label class="account-filter__item account-filter__item--all">
+          <input
+            type="checkbox"
+            [checked]="allAccountsSelected()"
+            [indeterminate]="someAccountsSelected()"
+            (change)="toggleAllAccounts()"
+          />
+          <span>Select All</span>
+        </label>
+        <div class="account-filter__divider"></div>
+        <label
+          class="account-filter__item"
+          *ngFor="let acc of accounts()"
+        >
+          <input
+            type="checkbox"
+            [checked]="isAccountSelected(acc.id)"
+            (change)="toggleAccountFilter(acc.id)"
+          />
+          <span class="account-filter__name">{{ acc.name }}</span>
+          <span class="account-filter__balance">{{ formatCurrency(acc.currentBalance) }}</span>
+        </label>
+      </div>
+    </div>
   </div>
 
   <!-- Stat Cards -->

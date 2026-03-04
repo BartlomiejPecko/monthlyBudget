@@ -1,7 +1,8 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BaseChartDirective } from 'ng2-charts';
+import { FormsModule } from '@angular/forms';
 import { ChartConfiguration, ChartData } from 'chart.js';
 import {
   Chart,
@@ -42,16 +43,43 @@ export class DashboardComponent implements OnInit {
   loading = signal(true);
   incomes = signal<Income[]>([]);
 
+  selectedAccountIds = signal<Set<number>>(new Set());
+  filterDropdownOpen = signal(false);
+
+  filteredExpenses = computed(() => {
+    const ids = this.selectedAccountIds();
+    return this.expenses().filter(e => ids.has(e.accountId));
+  });
+
+  filteredIncomes = computed(() => {
+    const ids = this.selectedAccountIds();
+    return this.incomes().filter(i => ids.has(i.accountId));
+  });
+
+  filteredAccounts = computed(() => {
+    const ids = this.selectedAccountIds();
+    return this.accounts().filter(a => ids.has(a.id));
+  });
+
+  allAccountsSelected = computed(() =>
+    this.selectedAccountIds().size === this.accounts().length
+  );
+
+  someAccountsSelected = computed(() => {
+    const size = this.selectedAccountIds().size;
+    return size > 0 && size < this.accounts().length;
+  });
+
   // Stats
   totalBalance = computed(() =>
-    this.accounts().reduce((s, a) => s + a.currentBalance, 0)
+    this.filteredAccounts().reduce((s, a) => s + a.currentBalance, 0)
   );
 
   currentMonthExpenses = computed(() => {
     const now = new Date();
     const y = now.getFullYear();
     const m = now.getMonth();
-    return this.expenses()
+    return this.filteredExpenses()
       .filter((e) => {
         const d = new Date(e.date);
         return d.getFullYear() === y && d.getMonth() === m && !e.isReturn;
@@ -63,7 +91,7 @@ export class DashboardComponent implements OnInit {
   const now = new Date();
   const y = now.getFullYear();
   const m = now.getMonth();
-  return this.incomes()
+  return this.filteredIncomes()
     .filter((i) => {
       const d = new Date(i.date);
       return d.getFullYear() === y && d.getMonth() === m;
@@ -71,16 +99,16 @@ export class DashboardComponent implements OnInit {
     .reduce((s, i) => s + i.amount, 0);
 });
 
-  totalAccounts = computed(() => this.accounts().length);
+  totalAccounts = computed(() => this.selectedAccountIds().size);
 
-  recentExpenses = computed(() => this.expenses().slice(0, 7));
+  recentExpenses = computed(() => this.filteredExpenses().slice(0, 7));
 
   // Pie chart
   pieData = computed<ChartData<'pie'>>(() => {
     const map = new Map<string, number>();
     const colorMap = new Map<string, string>();
 
-    this.expenses()
+    this.filteredExpenses()
       .filter((e) => !e.isReturn)
       .forEach((e) => {
         const name = e.categoryName || 'Other';
@@ -155,7 +183,7 @@ export class DashboardComponent implements OnInit {
         d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
       );
 
-      const monthExps = this.expenses().filter((e) => {
+      const monthExps = this.filteredExpenses().filter((e) => {
         const ed = new Date(e.date);
         return ed.getFullYear() === y && ed.getMonth() === m;
       });
@@ -257,7 +285,11 @@ export class DashboardComponent implements OnInit {
       error: () => done(),
     });
     this.api.getAccounts().subscribe({
-      next: (d) => { this.accounts.set(d); done(); },
+      next: (d) => {
+        this.accounts.set(d);
+        this.selectedAccountIds.set(new Set(d.map(a => a.id)));
+        done();
+      },
       error: () => done(),
     });
     this.api.getCategories().subscribe({
@@ -267,7 +299,41 @@ export class DashboardComponent implements OnInit {
     this.api.getIncomes().subscribe({
     next: (d) => { this.incomes.set(d); done(); },
     error: () => done(),
-  });
+    });
+  }
+
+  toggleAccountFilter(accountId: number): void {
+    const current = new Set(this.selectedAccountIds());
+    if (current.has(accountId)) {
+      current.delete(accountId);
+    } else {
+      current.add(accountId);
+    }
+    this.selectedAccountIds.set(current);
+  }
+
+  toggleAllAccounts(): void {
+    if (this.allAccountsSelected()) {
+      this.selectedAccountIds.set(new Set());
+    } else {
+      this.selectedAccountIds.set(new Set(this.accounts().map(a => a.id)));
+    }
+  }
+
+  toggleFilterDropdown(): void {
+    this.filterDropdownOpen.update(v => !v);
+  }
+
+  isAccountSelected(accountId: number): boolean {
+    return this.selectedAccountIds().has(accountId);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.account-filter')) {
+      this.filterDropdownOpen.set(false);
+    }
   }
 
   formatCurrency(value: number): string {
