@@ -19,7 +19,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final int AUTH_MAX_REQUESTS = 5;      // max 10 login/register attempts
     private static final int AUTH_WINDOW_SECONDS = 60;     // per 60 seconds
-    private static final int GENERAL_MAX_REQUESTS = 100;   // max 100 API calls
+    private static final int GENERAL_MAX_REQUESTS = 300;   // max 100 API calls
     private static final int GENERAL_WINDOW_SECONDS = 60;  // per 60 seconds
 
     private final Map<String, RateBucket> authBuckets = new ConcurrentHashMap<>();
