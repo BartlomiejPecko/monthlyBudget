@@ -30,13 +30,13 @@ export class GoalsComponent implements OnInit {
   // Fund modal
   showFundModal = signal(false);
   fundingGoal = signal<Goal | null>(null);
-  fundAmount: number | null = null;
+  fundAmount: string = '';
   fundError = '';
   fundSaving = signal(false);
 
   // Form
   formName = '';
-  formTargetAmount: number | null = null;
+  formTargetAmount: string = '';
   formDeadline = '';
   formCategoryId: number | null = null;
   formError = '';
@@ -102,7 +102,7 @@ export class GoalsComponent implements OnInit {
   openAddModal() {
     this.editingGoal.set(null);
     this.formName = '';
-    this.formTargetAmount = null;
+    this.formTargetAmount = '';
     this.formDeadline = '';
     this.formCategoryId = null;
     this.formError = '';
@@ -112,7 +112,7 @@ export class GoalsComponent implements OnInit {
   openEditModal(goal: Goal) {
     this.editingGoal.set(goal);
     this.formName = goal.name;
-    this.formTargetAmount = goal.targetAmount;
+    this.formTargetAmount = String(goal.targetAmount).replace('.', ',');
     this.formDeadline = goal.deadline || '';
     this.formCategoryId = goal.categoryId || null;
     this.formError = '';
@@ -129,7 +129,7 @@ export class GoalsComponent implements OnInit {
       this.formError = 'Goal name is required';
       return;
     }
-    if (!this.formTargetAmount || this.formTargetAmount <= 0) {
+    if (!this.parseAmount(this.formTargetAmount) || this.parseAmount(this.formTargetAmount) <= 0) {
       this.formError = 'Target amount must be greater than 0';
       return;
     }
@@ -139,7 +139,7 @@ export class GoalsComponent implements OnInit {
 
     const request: GoalRequest = {
       name: this.formName.trim(),
-      targetAmount: this.formTargetAmount,
+      targetAmount: this.parseAmount(this.formTargetAmount),
       deadline: this.formDeadline || undefined,
       categoryId: this.formCategoryId || undefined,
     };
@@ -176,7 +176,7 @@ export class GoalsComponent implements OnInit {
   // --- Fund Modal ---
   openFundModal(goal: Goal) {
     this.fundingGoal.set(goal);
-    this.fundAmount = null;
+    this.fundAmount = '';
     this.fundError = '';
     this.showFundModal.set(true);
   }
@@ -190,7 +190,7 @@ export class GoalsComponent implements OnInit {
     const goal = this.fundingGoal();
     if (!goal) return;
 
-    if (!this.fundAmount || this.fundAmount <= 0) {
+    if (!this.parseAmount(this.fundAmount) || this.parseAmount(this.fundAmount) <= 0) {
       this.fundError = 'Amount must be greater than 0';
       return;
     }
@@ -198,7 +198,7 @@ export class GoalsComponent implements OnInit {
     this.fundError = '';
     this.fundSaving.set(true);
 
-    const newAmount = goal.currentAmount + this.fundAmount;
+    const newAmount = goal.currentAmount + this.parseAmount(this.fundAmount);
 
     const request: GoalRequest = {
       name: goal.name,
@@ -258,6 +258,10 @@ export class GoalsComponent implements OnInit {
       style: 'currency',
       currency: 'PLN',
     }).format(value);
+  }
+
+  parseAmount(value: string): number {
+  return parseFloat(value.replace(',', '.')) || 0;
   }
 
   formatDate(date: string): string {

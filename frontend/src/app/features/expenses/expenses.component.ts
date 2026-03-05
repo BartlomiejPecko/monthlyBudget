@@ -40,7 +40,7 @@ export class ExpensesComponent implements OnInit {
   filterReturnOnly = false;
 
   // Form
-  formAmount: number | null = null;
+  formAmount: string = '';
   formDescription = '';
   formDate = '';
   formIsReturn = false;
@@ -151,7 +151,7 @@ export class ExpensesComponent implements OnInit {
   // --- Modal ---
   openAddModal() {
     this.editingExpense.set(null);
-    this.formAmount = null;
+    this.formAmount = '';
     this.formDescription = '';
     this.formDate = new Date().toISOString().split('T')[0];
     this.formIsReturn = false;
@@ -165,7 +165,7 @@ export class ExpensesComponent implements OnInit {
 
   openEditModal(exp: Expense) {
     this.editingExpense.set(exp);
-    this.formAmount = exp.amount;
+    this.formAmount = String(exp.amount).replace('.', ',');
     this.formDescription = exp.description || '';
     this.formDate = exp.date;
     this.formIsReturn = exp.isReturn;
@@ -181,7 +181,7 @@ export class ExpensesComponent implements OnInit {
   }
 
   saveExpense() {
-    if (!this.formAmount || this.formAmount <= 0) {
+    if (!this.parseAmount(this.formAmount) || this.parseAmount(this.formAmount) <= 0) {
       this.formError = 'Amount must be greater than 0';
       return;
     }
@@ -202,7 +202,7 @@ export class ExpensesComponent implements OnInit {
     this.saving.set(true);
 
     const request: ExpenseRequest = {
-      amount: this.formAmount,
+      amount: this.parseAmount(this.formAmount),
       description: this.formDescription.trim(),
       date: this.formDate,
       isReturn: this.formIsReturn,
@@ -273,6 +273,10 @@ export class ExpensesComponent implements OnInit {
       style: 'currency',
       currency: 'PLN',
     }).format(value);
+  }
+
+  parseAmount(value: string): number {
+  return parseFloat(value.replace(',', '.')) || 0;
   }
 
   formatDate(date: string): string {

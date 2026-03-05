@@ -35,10 +35,10 @@ export class AccountsComponent implements OnInit {
   incomeDeleting = signal(false);
 
   formName = '';
-  formInitialBalance: number | null = null;
+  formInitialBalance: string = '';
   formError = '';
 
-  incomeFormAmount: number | null = null;
+  incomeFormAmount: string = '';
   incomeFormDescription = '';
   incomeFormDate = '';
   incomeFormAccountId: number | null = null;
@@ -108,7 +108,7 @@ export class AccountsComponent implements OnInit {
   openAddModal() {
     this.editingAccount.set(null);
     this.formName = '';
-    this.formInitialBalance = null;
+    this.formInitialBalance = '';
     this.formError = '';
     this.showModal.set(true);
   }
@@ -116,7 +116,7 @@ export class AccountsComponent implements OnInit {
   openEditModal(account: Account) {
     this.editingAccount.set(account);
     this.formName = account.name;
-    this.formInitialBalance = account.initialBalance;
+    this.formInitialBalance = String(account.initialBalance).replace('.', ',');
     this.formError = '';
     this.showModal.set(true);
   }
@@ -131,7 +131,7 @@ export class AccountsComponent implements OnInit {
       this.formError = 'Account name is required';
       return;
     }
-    if (this.formInitialBalance === null || this.formInitialBalance < 0) {
+    if (this.parseAmount(this.formInitialBalance) < 0) {
       this.formError = 'Initial balance must be 0 or more';
       return;
     }
@@ -141,7 +141,7 @@ export class AccountsComponent implements OnInit {
 
     const request: AccountRequest = {
       name: this.formName.trim(),
-      initialBalance: this.formInitialBalance,
+      initialBalance: this.parseAmount(this.formInitialBalance),
     };
 
     const editing = this.editingAccount();
@@ -202,7 +202,8 @@ export class AccountsComponent implements OnInit {
 
   openIncomeModal(preselectedAccountId?: number) {
     this.editingIncome.set(null);
-    this.incomeFormAmount = null;
+    this.incomeFormAmount = '';
+
     this.incomeFormDescription = '';
     this.incomeFormDate = new Date().toISOString().split('T')[0];
     this.incomeFormAccountId = preselectedAccountId ||
@@ -214,7 +215,7 @@ export class AccountsComponent implements OnInit {
 
   openEditIncomeModal(income: Income) {
     this.editingIncome.set(income);
-    this.incomeFormAmount = income.amount;
+    this.incomeFormAmount = String(income.amount).replace('.', ',');
     this.incomeFormDescription = income.description || '';
     this.incomeFormDate = income.date;
     this.incomeFormAccountId = income.accountId;
@@ -228,8 +229,12 @@ export class AccountsComponent implements OnInit {
     this.editingIncome.set(null);
   }
 
+  parseAmount(value: string): number {
+  return parseFloat(value.replace(',', '.')) || 0;
+  }
+
   saveIncome() {
-    if (!this.incomeFormAmount || this.incomeFormAmount <= 0) {
+    if (!this.parseAmount(this.incomeFormAmount) || this.parseAmount(this.incomeFormAmount) <= 0) {
       this.incomeFormError = 'Amount must be greater than 0';
       return;
     }
@@ -246,7 +251,7 @@ export class AccountsComponent implements OnInit {
     this.incomeSaving.set(true);
 
     const request: IncomeRequest = {
-      amount: this.incomeFormAmount,
+      amount: this.parseAmount(this.incomeFormAmount),
       description: this.incomeFormDescription.trim(),
       date: this.incomeFormDate,
       accountId: this.incomeFormAccountId,
