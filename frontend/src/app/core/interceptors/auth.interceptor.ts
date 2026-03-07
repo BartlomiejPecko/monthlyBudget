@@ -15,11 +15,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     retry({
       count: 2,
       delay: (error, retryCount) => {
-        // Don't retry 401/403/422/400 — those are real errors
         if ([400, 401, 403, 422].includes(error.status)) {
           throw error;
         }
-        // Retry 0 (no connection), 500, 502, 503, 504
         return timer(retryCount * 1000);
       },
     }),
